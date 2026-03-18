@@ -182,11 +182,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # settings for aws bucket ---------------------
 AWS_ACCESS_KEY_ID = os.environ.get('SK_AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('SK_AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'schoolistan-test'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', 'teachothersonline-test')
+AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com')
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
+
+# Make uploaded media directly accessible via plain S3 URL (no signed querystrings).
+AWS_QUERYSTRING_AUTH = False
+# If you want public URLs like the one you pasted to work, objects must be public
+# via bucket policy and/or object ACL. This makes new uploads public by default.
+AWS_DEFAULT_ACL = os.environ.get('AWS_DEFAULT_ACL', 'public-read')
 # AWS_LOCATION = 'static'
 # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
