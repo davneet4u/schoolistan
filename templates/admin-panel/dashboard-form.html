@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>Cspedu | Admin Panel</title>
+    <!-- favicon icon -->
+    <link rel="icon" href="/images/logo.png" type="image/png" />
+    <!-- libraries -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <!-- <link rel="stylesheet" href="libraries/alertify.min.css">
+    <link rel="stylesheet" href="over-ride-libs/style.css"> -->
+    <!-- custom styles -->
+    <link rel="stylesheet" href="/styles/control-panel.css?v=0.02" />
+    <link rel="stylesheet" href="/styles/control-panel-responsive.css?v=0.02" />
+  </head>
+  <body>
+    <nav class="side-nav">
+      <header>
+        <a href="/">
+          <img src="/images/logo.png" style="height: 45px" alt="Logo" />
+          &nbsp;&nbsp;<b>Teachothers</b>
+        </a>
+        <a id="close"><i class="fa-solid fa-xmark"></i></a>
+      </header>
+      <a href="admin_dash" class="active">
+        <i class="fa-solid fa-user"></i>Dashboard
+      </a>
+      <a href="users"> <i class="fa-solid fa-user"></i>Users </a>
+      <a href="staffs"> <i class="fa-solid fa-user"></i>Staffs </a>
+      <a href="javascript:void(0);" class="d-btn" id="drop-1">
+        <i class="fa-solid fa-user"></i>Standards
+        <i class="fa-solid fa-caret-down"></i>
+      </a>
+      <div class="d-box" id="drop-1-box">
+        <a href="queries"> <i class="fa-solid fa-user"></i>Inner 1 </a>
+        <a href="slides" class="active">
+          <i class="fa-solid fa-user"></i>Inner 2
+        </a>
+        <a href="videos"> <i class="fa-solid fa-user"></i>Inner 3 </a>
+      </div>
+      <a href="queries"> <i class="fa-solid fa-user"></i>Queries </a>
+      <a href="slides"> <i class="fa-solid fa-user"></i>Slides </a>
+      <a href="javascript:void(0);" class="d-btn" id="drop-2">
+        <i class="fa-solid fa-user"></i>Videos
+        <i class="fa-solid fa-caret-down"></i>
+      </a>
+      <div class="d-box" id="drop-2-box">
+        <a href="queries"> <i class="fa-solid fa-user"></i>Inner 1 </a>
+        <a href="slides" class="active">
+          <i class="fa-solid fa-user"></i>Inner 2
+        </a>
+        <a href="videos"> <i class="fa-solid fa-user"></i>Inner 3 </a>
+      </div>
+      <a href="photos"> <i class="fa-solid fa-user"></i>Photos </a>
+    </nav>
+    <nav class="top-nav">
+      <i id="menu" class="fa-solid fa-bars"></i>
+      <p style="font-size: 1.4em; font-weight: bold; flex: 1">Hi Raj</p>
+      <div class="dropdown">
+        <button class="dropbtn">
+          <img src="/images/user.png" class="profile" alt="Profile" />
+        </button>
+        <div class="dropdown-content">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <div class="card">
+        <h1 style="display: inline">Standard</h1>
+        <div class="divider"></div>
+        <form
+          action="/admin/standard/save"
+          method="POST"
+          class="form"
+          enctype="multipart/form-data"
+        >
+          <p>
+            <label for="id_name">Name:</label>
+            <input type="text" name="name" id="name" />
+          </p>
+          <p>
+            <label for="id_monthly_fee">Monthly fee:</label>
+            <input type="number" name="monthly_fee" id="monthly_fee" />
+          </p>
+          <p>
+            <label for="id_admission_allowed">Admission allowed:</label>
+            <select name="admission_allowed" id="id_admission_allowed">
+              <option value="False" selected>No</option>
+              <option value="True">Yes</option>
+            </select>
+          </p>
+          <p>
+            <label for="id_status">Status:</label>
+            <select name="status" id="id_status">
+              <option value="False" selected>InActive</option>
+              <option value="True">Active</option>
+            </select>
+          </p>
+          <p>
+            <label for="id_board">Board:</label>
+            <select name="board" required id="id_board">
+              <option value="" selected>---------</option>
+              <option value="cbse">CBSE</option>
+              <option value="bseb">BSEB</option>
+            </select>
+          </p>
+          <div class="btn-box">
+            <button type="button" class="btn secondary">Cancel</button>
+            <span>&nbsp;</span>
+            <button type="Submit" class="btn primary">
+              <i class="fa-solid fa-floppy-disk"></i> Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <div id="loader-box"></div>
+    <script>
+      const needTable = false;
+    </script>
+    <!-- <script src="/libraries/alertify.min.js"></script> -->
+    <script src="/scripts/control-panel.js?v=0.02"></script>
+  </body>
+</html>

@@ -1,0 +1,100 @@
+{% extends 'layouts/admin-layout.html' %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">Moderators</h1>
+    <div class="divider"></div>
+    <form method="POST" class="form">
+      {% csrf_token %}
+      <p>
+        <label for="first_name">First Name:</label>
+        <input
+          type="text"
+          name="first_name"
+          id="first_name"
+          value="{{teacher.first_name}}"
+          required
+        />
+      </p>
+      <p>
+        <label for="last_name">Last Name:</label>
+        <input
+          type="text"
+          name="last_name"
+          id="last_name"
+          value="{{teacher.last_name}}"
+          required
+        />
+      </p>
+      <p>
+        <label for="email">Email Id:</label>
+        {% if teacher %}
+        <input
+          type="email"
+          name="email"
+          id="email"
+          value="{{teacher.email}}"
+          required
+          disabled
+        />
+        {% else %}
+        <input
+          type="email"
+          name="email"
+          id="email"
+          value="{{teacher.email}}"
+          required
+        />
+        {% endif %}
+      </p>
+      <p>
+        <label for="birthday">Date of Birth:</label>
+        <input
+          type="date"
+          name="birthday"
+          id="birthday"
+          value="{{dob}}"
+          required
+        />
+      </p>
+      <p>
+        <label for="mobile">Mobile No:</label>
+        <input
+          type="number"
+          name="mobile"
+          id="mobile"
+          onkeypress="return validatePhoneNo(event, this)"
+          value="{{teacher.mobile}}"
+          required
+        />
+      </p>
+      <p>
+        <label for="id_status">Status:</label>
+        <select
+          name="status"
+          id="id_status"
+          value="{{teacher.first_name}}"
+          required
+        >
+        <option value="1" {% if teacher and teacher.status == True %}selected{% endif %}>Active</option>
+        <option value="0"{% if teacher and teacher.status != True %}selected{% endif %}>InActive</option>
+        </select>
+      </p>
+
+      <p>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required />
+      </p>
+
+      <div class="btn-box">
+        <button type="button" class="btn secondary" onclick="history.back()">
+          Cancel
+        </button>
+        <span>&nbsp;</span>
+        <button type="Submit" class="btn primary">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock content %}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load custom_date_tags %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schoolistan</title>
+  </head>
+  <body>
+    <p>
+      Your payment of Rs {{payment.amount}} on
+      {{payment.updated_on|datetime_obj_to_ist_str}} (IST) is completed successfully.
+      For access fee recipt please have a look into attachment or go to profile
+      page.
+    </p>
+    <br />
+    <p>Regards schoolistan<br />Date: {{curr_date_time}} (IST)</p>
+  </body>
+</html>

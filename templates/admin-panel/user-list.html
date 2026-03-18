@@ -1,0 +1,120 @@
+{% extends 'layouts/admin-layout.html' %} {% load static %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">User List</h1>
+
+    <div class="divider"></div>
+    <div class="filter">
+      <div class="input-box">
+        <label for="no_of_row">Entries: </label>
+        <select name="no_of_row" id="no_of_row" onchange="renderTable()">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label for="search">Search: </label>
+        <input type="text" name="search" id="search" />
+      </div>
+      <div class="input-box">
+        <button class="btn icon" title="Go" onclick="loaduser()">
+          <i class="fa-solid fa-right-long"></i>
+        </button>
+      </div>
+    </div>
+    <div class="table-box">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>S. No</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Date joined</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="data-box"></tbody>
+      </table>
+    </div>
+    <div class="pages">
+      <button
+        class="btn icon"
+        id="page_decrease"
+        onclick="decreasePage()"
+        disabled=""
+      >
+        <i class="fa-solid fa-left-long"></i>
+      </button>
+      <span id="page-no">1</span>
+      <button
+        class="btn icon"
+        id="page_increase"
+        onclick="increasePage()"
+        disabled=""
+      >
+        <i class="fa-solid fa-right-long"></i>
+      </button>
+    </div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %}
+<script>
+  async function loaduser() {
+    const search = document.getElementById("search");
+    const result = await getFromServer(
+      `/admin/user-list?search=${search.value}`
+    );
+    const dataBox = document.getElementById("data-box");
+    dataBox.innerHTML = "";
+    // console.log(result);
+    if (result.status) {
+      // console.log(result.data.rows);
+      let i = 0;
+
+      result.data.rows.forEach((row) => {
+        i++; // i = i+1;
+        let dataHtml = `
+        <tr>
+            <td>${i}</td>
+            <td>${row[1]}</td>
+            <td>${row[2]}</td>
+            <td>${row[3]}</td>
+            <td>${row[4]}</td>
+            <td>${fromatToDateTime(row[5])}</td>
+            <td>
+              <a class="btn-e" href="#" title="Make Moderator" onclick="makeModerators(${
+                row[0]
+              })">
+              <i class="fa-solid fa-person-chalkboard"></i>
+              </a>
+            </td>
+          </tr>
+
+        `;
+        // console.log(row);
+        dataBox.insertAdjacentHTML("beforeend", dataHtml);
+      });
+    } else {
+      alertify.error(result.msg);
+    }
+  }
+  loaduser();
+
+  async function makeModerators(id) {
+    a = confirm("Do you really want to make this user as a Moderators");
+    if (a) {
+      const result = await postToServer(`/admin/user/${id}/change-role`);
+      if (result.status) {
+        alertify.success(result.msg);
+        loaduser();
+      } else {
+        alertify.error(result.msg);
+      }
+    }
+  }
+</script>
+{% endblock scripts %}

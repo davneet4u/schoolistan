@@ -1,0 +1,1 @@
+web: gunicorn teachothers.wsgi --log-file -

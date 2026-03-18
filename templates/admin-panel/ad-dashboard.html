@@ -1,0 +1,30 @@
+{% extends 'layouts/admin-layout.html' %} {% block content %}
+<main>
+  <div class="card" style="min-height: 80vh">
+    <h1 style="display: inline">Dashboard</h1>
+    <div class="divider"></div>
+    <div class="grid-5">
+      <div class="box">
+        <div class="icon"><i class="fa-solid fa-user"></i></div>
+        <span class="val">#{{students}}</span>
+        <p>Students</p>
+      </div>
+      <div class="box">
+        <div class="icon"><i class="fa-solid fa-people-group"></i></div>
+        <span class="val">#{{staffs}}</span>
+        <p>Staff</p>
+      </div>
+      <div class="box">
+        <div class="icon"><i class="fa-solid fa-person-chalkboard"></i></div>
+        <span class="val">#{{teachers}}</span>
+        <p>Moderators</p>
+      </div>
+      <div class="box">
+        <div class="icon"><i class="fa-solid fa-c"></i></div>
+        <span class="val">#5</span>
+        <p>Categories</p>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}

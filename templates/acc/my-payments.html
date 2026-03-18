@@ -1,0 +1,74 @@
+{% extends 'layouts/user-layout.html' %} {% load static %} {% load custom_date_tags %} {% block styles %}
+<link rel="stylesheet" href="{% static 'libraries/cropper/cropper.min.css' %}">
+{% endblock styles %} {% block content %}
+<main class="main">
+  <div class="container">
+    <h2 style="margin-bottom: 10px">Payment information</h2>
+    <div class="table-box">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>S. No</th>
+            <th>Order id</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date of payment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="data-box">
+          {% if payments %}
+          {% for payment in payments %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{payment.order_id}}</td>
+            <td><i class="fa-solid fa-indian-rupee-sign"></i> {{payment.amount}}</td>
+            {% if payment.status == 1 %}
+            <td style="color: green;"><i class="fa-solid fa-circle-check"></i> {{payment.status_str}}</td>
+            {% else %}
+            <td style="color: red;"><i class="fa-solid fa-circle-exclamation"></i> {{payment.status_str}}</td>
+            {% endif %}
+            <td>{{payment.created_on|datetime_obj_to_ist_str}}</td>
+            <td><a href="/payments/fee-receipt/{{payment.id}}"><i class="fa-solid fa-download"></i></a></td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr><td colspan="6" style="text-align: center;">No payments</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    <br /><br />
+    <h2 style="margin-bottom: 10px">Subscription information</h2>
+    <div class="table-box">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>S. No</th>
+            <th>Course name</th>
+            <th>Exp date</th>
+            <th>Updated date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="data-box">
+          {% if subscriptions %}
+          {% for subscription in subscriptions %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{subscription.category.title}}</td>
+            <td>{{subscription.end_date}}</td>
+            <td>{{subscription.updated_on|datetime_obj_to_ist_str}}</td>
+            <td></td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr><td colspan="5" style="text-align: center;">No subscriptions</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br /><br />
+</main>
+{% endblock content %}

@@ -1,0 +1,74 @@
+{% extends 'layouts/home-layout.html' %} {% block content %}
+<main>
+  <div class="container">
+    <h1 style="text-align: center">Contact Us</h1><br />
+    <h3 style="text-align: center">We would love to hear from you!</h3><br />
+    <div class="double-box" style="max-width: 900px; margin: auto;">
+      <div class="card">
+        <h2>Get in Touch</h2><br />
+        <form class="form" method="POST">
+          {% csrf_token %}
+          <p class="full">
+            <label for="name">Full Name.</label>
+            <input name="name" id="name" required placeholder="Full Name" />
+          </p>
+          <p class="full">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              placeholder="Email Address"
+            />
+          </p>
+          <p class="full">
+            <label for="mobile">Mobile No.</label>
+            <input
+              name="mobile"
+              id="mobile"
+              required
+              placeholder="Mobile no"
+              type="number"
+              onkeypress="return validatePhoneNo(event, this)"
+            />
+          </p>
+          <p class="full">
+            <label for="subject">Subject</label>
+            <input name="subject" id="subject" required placeholder="Subject" />
+          </p>
+          <p class="full">
+            <label for="message">Message.</label>
+            <textarea
+              name="message"
+              id="message"
+              rows="3"
+              required
+              placeholder="message"
+            ></textarea>
+          </p>
+          <div style="text-align: center; width: 100%">
+            <br />
+            <button type="Submit" class="btn pri">
+              <i class="fa-solid fa-floppy-disk"></i> Submit
+            </button>
+          </div>
+        </form>
+      </div>
+      <div>
+        <h2 style="color: var(--pri-btn-color);">Reach us at</h2><br />
+        <div>
+          <h3>Mishmash Education Services private Limited</h3><br />
+        </div> <br />
+        <div class="social-links theme" style="justify-content: flex-start;">
+          <a href="https://www.facebook.com/"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://twitter.com/"><i class="fa-brands fa-twitter"></i></a>
+          <a href="https://www.youtube.com/"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://in.linkedin.com/"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %} {% endblock scripts %}

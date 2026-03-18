@@ -1,0 +1,120 @@
+{% extends 'layouts/admin-layout.html' %} {% load static %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">Banner List</h1>
+    <a class="btn primary" href="/admin/banner/add" style="float: right">
+      <i class="fa-solid fa-plus"></i> Add New
+    </a>
+    <div class="divider"></div>
+    <div class="filter">
+      <div class="input-box">
+        <label for="no_of_row">Entries: </label>
+        <select name="no_of_row" id="no_of_row" onchange="renderTable()">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label for="search">Search: </label>
+        <input type="text" name="search" id="search" />
+      </div>
+      <div class="input-box">
+        <button class="btn icon" title="Go" onclick="loadBanners()">
+          <i class="fa-solid fa-right-long"></i>
+        </button>
+      </div>
+    </div>
+    <div class="table-box">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th>S. No</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="data-box"></tbody>
+      </table>
+    </div>
+    <div class="pages">
+      <button
+        class="btn icon"
+        id="page_decrease"
+        onclick="decreasePage()"
+        disabled=""
+      >
+        <i class="fa-solid fa-left-long"></i>
+      </button>
+      <span id="page-no">1</span>
+      <button
+        class="btn icon"
+        id="page_increase"
+        onclick="increasePage()"
+        disabled=""
+      >
+        <i class="fa-solid fa-right-long"></i>
+      </button>
+    </div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %}
+<script>
+  async function loadBanners() {
+    const search = document.getElementById("search");
+    const result = await getFromServer(
+      `/admin/banner-list?search=${search.value}`
+    );
+    const dataBox = document.getElementById("data-box");
+    dataBox.innerHTML = "";
+    // console.log(result);
+    if (result.status) {
+      // console.log(result.data.rows);
+      let i = 0;
+
+      result.data.rows.forEach((row) => {
+        i++; // i = i+1;
+        let dataHtml = `
+        <tr>
+            <td>${i}</td>
+            <td>${row[1]}</td>
+            <td>${row[2] == 1 ? "Active" : "Inactive"}</td>
+            <td>${fromatToDateTime(row[3])}</td>
+            <td>
+              <a class="btn-e" href="/admin/banner/${row[0]}/edit" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </a>
+              <a class="btn-d" onclick="deletBanner(${row[0]}, this)" href="javascript:void(0);" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+        `;
+        // console.log(row);
+        dataBox.insertAdjacentHTML("beforeend", dataHtml);
+      });
+    } else {
+      alertify.error(result.msg);
+    }
+  }
+  loadBanners();
+  const deletBanner = (id, btn) => {
+    alertify.confirm("Do you really want to delete selected Banner?",
+    async function(){
+      showIconBtnLoading(btn);
+      const result = await deleteFromServer(`/admin/banner/${id}/delete`)
+      if (result.status) {
+        loadBanners();
+        alertify.success('Banner deleted successfully');
+      } else alertify.error(result.msg);
+      hideIconBtnLoading(btn);
+    },
+    function(){
+      alertify.error('Deletion cancelled.');
+    }).setHeader("<em> Banner deletion </em> ");
+  }
+</script>
+{% endblock scripts %}

@@ -1,0 +1,21 @@
+{% extends 'layouts/home-layout.html' %}{% load static %}{% block styles %}
+<style></style>
+{% endblock styles %}{% block content %}
+<main class="main" style="min-height: 60vh">
+  <div class="container">
+    <div class="courses-cont">
+      {% for course in courses %}
+      <a href="/course/{{course.slug}}" class="course-card">
+        <img src="/static/images/course-thumnail.webp" alt="" />
+        <h2>{{course.name}}</h2>
+        <div class="body">{% autoescape off %}{{course.about_str_to_html}}{% endautoescape %}</div>
+        <div class="price">
+          <del>&#8377;{{course.old_price}}</del>
+          &#8377;{{course.price}}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %} {% endblock scripts %}

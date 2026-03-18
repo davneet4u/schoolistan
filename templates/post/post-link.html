@@ -1,0 +1,121 @@
+{% extends 'layouts/user-layout.html' %} {% load static %}
+{% block title %}{{post.title}} | Schoolistan{% endblock title %}
+{% block meta_tags %} {% if post.meta_description %}
+<meta property="og:description" name="description" content="{{post.meta_description}}">
+{% endif %} {% endblock meta_tags %} {% block content %}
+<main>
+  <div class="container">
+    <div class="shortpost" id="{{post.id}}">
+      <div class="head">
+        {% if post.premium %}
+        <span title="premium"><i class="fa-solid fa-crown" ></i></span>
+        {% endif %}
+        {% if post.featured %}
+        <span title="Featured"><i class="fa-solid fa-award"></i></span>
+        {% endif %}
+        <span style="flex:1;"></span>
+        {% if request.user.role <= 3 or request.user.id == post.user_id %}
+        <a title="Delete" onclick="deletePost({{post.id}})" href="javascript:void(0);"><i class="fa-solid fa-trash"></i></a>&nbsp;
+        <a title="Edit" href="/post/post/{{post.id}}/edit"><i class="fa-solid fa-pen-to-square"></i></a>
+        {% endif %}
+        {% if locked %}<a href="/courses" title="Locked" style="color: red;"><i class="fa-solid fa-lock"></i></a>{% endif %}
+      </div>
+      <div class="body">
+        <div class="media">
+          {% if pattach %}
+          <div class="slider" style="grid-template-columns:{{grid_columm}};" id="slider-{{post.id}}" data-no="0">
+          {% for attach in pattach %} 
+            {% if locked and forloop.counter0 != 0 %}
+              <div class="attach" onclick="gotToCourses()">
+                <img src="{{MEDIA_URL}}{{LOCKED_POST_PIC}}" alt="raj" />
+              </div> 
+            {% else %}
+              {% if attach.type == 1 %}
+              <div class="attach">
+                <img src="{{MEDIA_URL}}{{attach.attachment}}" alt="raj" />
+              </div>
+              {% elif attach.type == 2 %}
+              <div class="attach">
+                <video width="100%" height="" controls>
+                  <source src="{{MEDIA_URL}}{{attach.attachment}}" type="video/mp4" />
+                </video>
+              </div>
+              {% elif attach.type == 3 %}
+              <div class="attach">
+                <div class="iframe-box">
+                  <iframe
+                    src="https://www.youtube.com/embed/{{attach.attachment}}"
+                    allowfullscreen="allowfullscreen"
+                    frameborder="0"
+                  ></iframe>
+                </div>
+              </div>
+              {% else %} {% endif %}
+            {% endif %}
+          {% endfor %}
+          </div>
+          <div class="slide-btns">
+            <button class="back" onclick="postSlideBack({{post.id}})"><i class="fa-solid fa-caret-left"></i></button>
+            <button class="next" onclick="postSlideNext({{post.id}})"><i class="fa-solid fa-caret-right"></i></button>
+          </div>
+          {% endif %}
+        </div>
+        <div class="media-dots">
+          {% for attach in pattach %}
+          <span class="dot {% if forloop.counter0 == 0 %}active{% endif %}" id="dot-{{ post.id }}-{{ forloop.counter0 }}" onclick="changePostSlide(this, {{ post.id }}, {{ forloop.counter0 }})"></span>
+          {% endfor %}
+        </div>
+        {% if post.text %}
+        <div class="description" id="desc-{{post.id}}">
+          {% autoescape off %}
+            {% if locked %}{{post.locked_text}}{% else %}{{post.text}}{% endif %}
+          {% endautoescape %}
+        </div>
+        <button onclick="hideShowDec({{post.id}}, this)">View More</button>
+        {% endif %}
+        <button onclick="showTranscript({{post.id}})" style="float: right;">Transcript</button>
+      </div>
+      {% if post.title %}<p class="title">{{post.title}}</p>{% endif %}
+      <div class="post-by">
+        <a href="/account/{{post.user.username}}" style="display: contents;" target="_blank">
+          <img src="{% static 'images/user.png' %}" alt="Avatar" />&nbsp;{{post.user.username}}
+        </a>
+        <p style="flex: 1"></p>
+        <p>{{post.created_on}}</p>
+      </div>
+      <div class="post-b-nav" >
+        <button data-liked="{{liked}}" class="{% if liked %}active{% endif %}" onclick="postlike({{post.id}}, this)">
+          <i class="fa-solid fa-thumbs-up"></i> <span id="likecount-{{post.id}}">{{likecount}}</span>  like
+        </button>
+        <button onclick="hideShowComment({{post.id}})" >
+          <i class="fa-solid fa-comment"></i> <span id="commentCount-{{post.id}}">{{comcount}}</span> comment
+        </button>
+        <button onclick="sharePost({{post.id}});"><i class="fa-solid fa-share-nodes"></i> shere</button>
+      </div>
+      <div class="comments" id="commbox-{{post.id}}" style="display: none;">
+        <div style="display: flex; align-items: center">
+          <textarea name="text" id="comm-{{post.id}}" style="flex: 1" class="input"  rows="2"></textarea>
+          &nbsp;
+          <div>
+            <button class="btn pri" type="submit" onclick="postcomment({{post.id}}, this)">
+              <i class="fa-solid fa-floppy-disk"></i>
+            </button>
+          </div>
+        </div>
+        <br />
+        <div class="comlist" id="comlist-{{post.id}}" style="display: block;"></div>
+      </div>
+      <div class="transcript" id="transcript-{{post.id}}" style="display: none; white-space: pre-line">
+        {% if post.transcript %}{{post.transcript}}{% else %}
+        <p style="text-align: center;">No Transcript</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %}
+<script>
+  const user_id = {{curr_user_id}};
+</script>
+<script src="{% static 'scripts/posts-view.js' %}?v=0.25"></script>
+{% endblock scripts %}

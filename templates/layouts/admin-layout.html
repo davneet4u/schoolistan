@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>Schoolistan | Admin Panel</title>
+    <!-- favicon icon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" />
+    <!-- libraries -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'libraries/alertify.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'over-ride-libs/style.css' %}" />
+    <!-- custom styles -->
+    <link rel="stylesheet" href="{% static 'styles/admin-panel.css' %}?v=0.10" />
+    <link
+      rel="stylesheet"
+      href="{% static 'styles/admin-panel-responsive.css' %}?v=0.02"
+    />
+    {% block styles %}{% endblock styles %}
+  </head>
+  <body>
+    <div id="messages" style="display: none">
+      {% for message in messages %}
+      <span>{{ message.tags }}||||{{ message }}</span>
+      {% endfor %}
+    </div>
+    <nav class="side-nav">
+      <header style="height: 45px">
+        <a href="/">
+          <!--<img src="/images/logo.png" style="height: 45px" alt="Logo" />&nbsp;&nbsp;-->
+          <b>schoolistan</b>
+        </a>
+        <a id="close"><i class="fa-solid fa-xmark"></i></a>
+      </header>
+      <a href="/admin/dashboard" {% if '/dashboard' in request.path %}class="active"{% endif %}>
+        <i class="fa-solid fa-gauge"></i>Dashboard
+      </a>
+      {% if request.user.role == 1 or request.user.role == 2 %}
+      <a href="javascript:void(0);" class="d-btn" id="drop-1">
+        <i class="fa-solid fa-user"></i>Users
+        <i class="fa-solid fa-caret-down"></i>
+      </a>
+      <div class="d-box" id="drop-1-box">
+        <a href="/admin/teachers" {% if '/teacher' in request.path %}class="active"{% endif %}>
+          <i class="fa-solid fa-person-chalkboard"></i>Moderators
+        </a>
+        <a href="/admin/users" {% if '/user' in request.path %}class="active"{% endif %}>
+          <i class="fa-solid fa-chalkboard-user"></i>Students
+        </a>
+      </div>
+      {% endif %}
+      <a href="/admin/categories" {% if '/categor' in request.path %}class="active"{% endif %}>
+        <i class="fa-solid fa-book"></i>Category
+      </a>
+      <a href="/admin/posts" {% if '/post' in request.path %}class="active"{% endif %}>
+        <i class="fa-solid fa-rss"></i>Posts
+      </a>
+      <a href="/admin/re-order-categories" {% if '/re-order-categories' in request.path %}class="active"{% endif %}>
+        <i class="fa-solid fa-list"></i>Re order categories
+      </a>
+      <a href="/admin/re-order-posts" {% if '/re-order-posts' in request.path %}class="active"{% endif %}>
+        <i class="fa-solid fa-list"></i>Re order posts
+      </a>
+      <a href="/admin/banners" {% if '/banners' in request.path %}class="active"{% endif %}>
+        <i class="fa-solid fa-image"></i>Banners/Ads
+      </a>
+    </nav>
+    <nav class="top-nav">
+      <i id="menu" class="fa-solid fa-bars"></i>
+      <p style="font-size: 1.4em; font-weight: bold; flex: 1">
+        Hi {{request.user.first_name}} {{request.user.last_name}}
+      </p>
+      <div class="dropdown">
+        <button class="dropbtn">
+          <img src="{% static 'images/user.png' %}" class="profile" alt="Profile" />
+        </button>
+        <div class="dropdown-content">
+          <a href="#">Profile</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </nav>
+    {% block content %}{% endblock content %}
+    <div class="loading" id="loading">
+      <div class="overlay"></div>
+      <img src="{% static 'images/loading.svg' %}" alt="Loading">
+    </div>
+    <script>
+      const needTable = false;
+    </script>
+    <script src="{% static 'libraries/alertify.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+    <script src="{% static 'scripts/requests.js' %}?v=0.03"></script>
+    <script src="{% static 'scripts/common.js' %}?v=0.16"></script>
+    <script src="{% static 'scripts/admin-panel.js' %}?v=0.02"></script>
+    {% block scripts %}{% endblock scripts %}
+  </body>
+</html>

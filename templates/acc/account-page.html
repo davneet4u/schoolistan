@@ -1,0 +1,68 @@
+{% extends 'layouts/user-layout.html' %}{% load static %} {% block content %}
+<main class="main">
+  {% comment %}
+  <div class="user-banner"></div>
+
+  {% endcomment %}
+  <div class="container">
+    <div class="acc-infos">
+      <div class="pic">
+        <img src="{% if user.profile_pic %}{{user.profile_pic.url}}{% else %}{% static 'images/user.png' %}{% endif %}" alt="Profile Picture" />
+      </div>
+      <div class="infos">
+        <h2>{{user.first_name}} {{user.last_name}}</h2>
+        <div class="winnings">
+          <p><b>{{post_count}}</b><b>Posts</b></p>
+          <p><b>{{followers}}</b><b>Followers</b></p>
+          <p><b>{{followings}}</b><b>Followings</b></p>
+        </div>
+        <h3>@{{user.username}}</h3>
+        <div class="about">{% if profile.about %}{{profile.about}}{% endif %}</div>
+        {% if curr_user %}
+          {% if curr_user.id != user.id %}
+            {% if follow_status %}
+            <b>You are Following</b> <button onclick="followUser(this)" data-following="1" class="btn pri sm">Unfollow</button>
+            {% else %}
+            <button onclick="followUser(this)" data-following="0" class="btn pri sm">Follow</button>
+            {% endif %}
+          {% endif %}
+        {% else %}
+        <a href="/login?next=/account/{{user.username}}" data-following="0" class="btn pri sm">Follow</a>
+        {% endif %}
+      </div>
+    </div>
+    <br /><br />
+    <h2 style="max-width: 780px; margin: auto">Posts</h2>
+    <br /><br />
+    <div id="data-box"></div><br />
+    <div id="data-loading" class="tx-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+    <div class="tx-center"><button id="load-more-post-btn" class="btn pri">View More Posts</button></div>
+  </div>
+</main>
+
+{% endblock content %}{% block scripts %}
+<script>
+  const user_id = {% if curr_user %}{{curr_user.id}}{% else %}0{% endif %};
+  const is_teacher = {% if curr_user and curr_user.role <= 3 %}true{% else %}false{% endif %};
+  const mediaUrl = "{{MEDIA_URL}}";
+  const userPic = "{% static 'images/user.png' %}";
+  const posts_url = "/post/post-list?user_id={{user.id}}"; // key is nothing just we are matching paterns
+  const bannerUrl = "/banner-list";
+</script>
+<script src="{% static 'scripts/swipe-handle.js' %}?v=0.03"></script>
+<script src="{% static 'scripts/posts-view.js' %}?v=0.25"></script>
+<script>
+  const followUser = async (btn, status) => {
+    showBtnLoading(btn);
+    const result = await postToServer(`/account/user/{{user.id}}/follow`, {
+      follow: btn.getAttribute('data-following') == 1 ? false : true,
+    });
+    if (result.status) {
+      window.location.reload();
+    } else {
+      alertify.error(result.msg);
+    }
+    // hideBtnLoading(btn);
+  }
+</script>
+{% endblock scripts %}

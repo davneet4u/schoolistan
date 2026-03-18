@@ -1,0 +1,70 @@
+{% extends 'layouts/home-layout.html' %} {% load static %} {% block styles %}
+<style> p a { color: blue; } </style>
+{% endblock styles %} {% block content %}
+<main>
+  <div class="container">
+    <h1 style="text-align: center">Booking your Practical GST Course Now</h1>
+    <div class="divider"></div>
+    <h2>What will you get?</h2><br />
+    <div class="para-box">
+      <ul>
+        <li>Recorded Content</li>
+        <li>Access to GST Simulaiton Portal</li>
+        <li>Live Doubt Classes</li>
+      </ul>
+    </div>
+    <br /><h2>User Details</h2>
+    <div class="form">
+      <p>
+        <label for="fname">First name:</label>
+        <input type="text" id="fname" value="{{request.user.first_name}}" disabled />
+      </p>
+      <p>
+        <label for="lname">Last name:</label>
+        <input type="text" id="lname" value="{{request.user.last_name}}" disabled />
+      </p>
+      <p>
+        <label for="uname">Username:</label>
+        <input type="text" id="uname" value="{{request.user.username}}" disabled />
+      </p>
+      <p>
+        <label for="email">Email id:</label>
+        <input type="email" id="email" value="{{request.user.email}}" disabled />
+      </p>
+    </div>
+    <br /><h2>Bill Details</h2><br />
+    <div>
+      <p><b>Course Price: </b><b>&#8377;</b><span>{{course.old_price}}</span></p>
+      <p><b>Discount {{course.calc_discount}}% off: </b><b>&#8377;</b><span>{{course.calc_discount_amt}}</span></p>
+      <p><b>Bill payable (incl. taxes): </b><b>&#8377;</b><span>{{course.price}}</span></p>
+    </div>
+    <div style="text-align: center;">
+      <button class="btn pri" onclick="subscribeCourses(this)">Proceed to pay &#8377;{{course.price}}</button>
+    </div><br />
+    <p>By clicking on "Proceed to pay", you agree to our <a href="/term-of-service">terms of service</a> and will be charged ₹2500 for unlocling GST Course unless you cancel now. No questions <a href="/refund-policy">refund policy</a> if you don't like the course</p>
+  </div>
+</main>
+{% endblock content %} {% block scripts %}
+<script>
+  const CASH_FREE_MODE = "{{CASH_FREE_MODE}}";
+</script>
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+<script src="{% static 'scripts/payment.js' %}?v=0.06"></script>
+{% if has_all_profile_info %}
+<script>const hasAllProfileInfo = true;</script>
+{% else %}
+<script>const hasAllProfileInfo = false;</script>
+{% endif %}
+<script>
+  const subscribeCourses = (btn) => {
+    if(hasAllProfileInfo) {
+      showBtnLoading(btn);
+      payNow('course', "{{course.id}}");
+    } else {
+      alertify.alert("Please update email, phone number and name on profile page to proceed.", function(){
+        window.location.href=`/account/profile?next=${window.location.pathname}`
+      }).setHeader("<em> Course Subscription </em> ");
+    }
+  }
+</script>
+{% endblock scripts %}

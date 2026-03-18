@@ -1,0 +1,93 @@
+{% extends 'layouts/home-layout.html' %} {% load static %} {% block content %}
+<main class="main">
+  <div class="home-banner">
+    <h1>Learn new Skills</h1>
+    {% comment %} <div class="search-body">
+      <input type="text" name="search" id="search" placeholder="Search topics here" />
+      <img src="{% static 'images/Frame.svg' %}" alt="right" />
+    </div> {% endcomment %}
+    <div class="words" style="text-align: center">
+      {% for cat in categories %} <a href="/category/{{cat.p_slug}}/{{cat.slug}}">{{cat.title}}</a> {% endfor %}
+    </div>
+    <div><a href="/login" class="btn pri">Start Free</a></div>
+  </div>
+  <div class="container">
+    <h1>Schoolistan gives you an opportunity to</h1>
+    <div class="home-banner2">
+      <div class="aaa">
+        <div class="row-sb">
+          <img src="{% static 'images/learn.svg' %}" alt="" srcset="" />
+          <img src="{% static 'images/go.svg' %}" alt="right" />
+        </div>
+        <br /><b>Learn</b><br />
+        <br />
+        <p>Learn difficult concepts<br />in easiest way</p>
+      </div>
+      <div class="aaa">
+        <div class="row-sb">
+          <img src="{% static 'images/ask.svg' %}" alt="" srcset="" />
+          <img src="{% static 'images/go.svg' %}" alt="right" />
+        </div>
+        <br /><b>Ask</b><br />
+        <br />
+        <p>Facing some Problem<br />Ask your doubts free</p>
+      </div>
+      <div class="aaa">
+        <div class="row-sb">
+          <img src="{% static 'images/help.svg' %}" alt="" srcset="" />
+          <img src="{% static 'images/go.svg' %}" alt="right" />
+        </div>
+        <br /><b>Teach</b><br />
+        <br />
+        <p>Share your knowledge<br />and Start Earn Money</p>
+      </div>
+    </div>
+  </div>
+  <div class="banner4">
+    <h1 style="text-align: center">If you love to teach, then join Schoolistan</h1>
+    <br />
+    <div class="why-box">
+      <div
+        class="img-box"
+        style="background-image: url('{% static 'images/girl.svg' %}')"
+      ></div>
+      <div class="why-text">
+        <h2 style="margin-bottom: 24px">Why join schoolistan</h2>
+        <ul type="disc">
+          <li>Showcase your skills.</li>
+          <li>Earn Extra income</li>
+          <li>Get Experience Letter</li>
+        </ul>
+      </div>
+    </div>
+    <p>
+      <br />
+      <a href="/login?next=/post/post/create" class="btn pri">Register now</a>
+    </p>
+    <br />
+  </div>
+  <div class="container">
+    <div class="banner5">
+      <div class="doubts-text">
+        <h2>Have a doubt?</h2><br />
+        <p>Not able to Understand, Ask it here--></p>
+      </div>
+      <div>
+        <textarea
+          rows="10"
+          placeholder="What do you want to ask today"
+        ></textarea>
+      </div>
+    </div>
+    <br />
+    <a href="/login?next=/post/post/create" style="float: right; padding: 5px 50px" class="btn sec">Ask</a>
+    <br />
+  </div>
+</main>
+{% endblock content %} {% block scripts %}
+<script>
+  const G_CLIENT_ID = "{{G_CLIENT_ID}}";
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="{% static 'scripts/login.js' %}?v=0.02"></script>
+{% endblock scripts %}

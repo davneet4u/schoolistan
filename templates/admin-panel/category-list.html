@@ -1,0 +1,239 @@
+{% extends 'layouts/admin-layout.html' %} {% load static %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'libraries/cropper/cropper.min.css' %}">
+<style>
+  #all-cats p { margin-bottom: 5px; }
+  #all-cats p > span, #all-cats p > b { cursor: pointer; }
+  #cat-popup-form a { text-decoration: none; color: blue; }
+  #course_link_bx { flex-direction: row; }
+  #thumbnailPic { width: 100px; margin-top: 5px; cursor: pointer;}
+</style>
+{% endblock styles %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">Category List</h1>
+    <div class="divider"></div>
+    <div id="all-cats"></div>
+  </div>
+</main>
+<!-- --------------- all popups --------------- -->
+<div class="popup" id="category-popup">
+  <div class="overlay" onclick="closeCatPopup()"></div>
+  <div class="content" style="max-width: 1024px;">
+    <h2 style="display: inline-block; margin-top: -5px" id="cat-popup-title">
+      <!--<i class="fa-solid fa-plus"></i>-->
+      Category title
+    </h2>
+    <i id="close-btn" class="fa-solid fa-rectangle-xmark" onclick="closeCatPopup()"></i>
+    <div class="divider"></div>
+    <div id="cat-popup-loading" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i></div>
+    <form class="form" id="cat-popup-form">
+      <input type="hidden" id="cat_id">
+      <p>
+        <label for="cat_status">status</label>
+        <select id="cat_status">
+          <option value="1">Active</option>
+          <option value="0">Inactive</option>
+        </select>
+      </p>
+      <p>
+        <label for="cat_published">Published</label>
+        <select id="cat_published">
+          <option value="1">Published</option>
+          <option value="0">Draft</option>
+        </select>
+      </p>
+      <p id="cat_premium_in_bx">
+        <label for="cat_premium">Premium</label>
+        <select id="cat_premium" onchange="changeCatPremium(this)">
+          <option value="1">Yes</option>
+          <option value="0" selected>No</option>
+        </select>
+      </p>
+      <p id="course_link_bx" class="full"></p>
+      <p class="full">
+        <label>Thumbnail</label>
+        <img src="{% static 'images/book-stack.png' %}" id="thumbnailPic" onclick="document.getElementById('thumbnail').click()"/>
+        <input style="display: none;" type="file" accept="image/*" id="thumbnail" onchange="changeThumbnail(this)" />
+        <input type="hidden" id="thumbnail_src_data" />
+      </p>
+      <p class="full">
+        <label for="meta_description">Meta Description</label>
+        <textarea name="meta_description" id="meta_description" maxlength="255" rows="2"></textarea>
+      </p>
+      <p class="full">
+        <label for="description">Description</label>
+        <textarea name="description" class="editor" id="description"></textarea>
+      </p>
+    </form>
+    <div class="divider"></div>
+    <div style="text-align: center">
+      <button class="btn primary" onclick="updateCat(this);">Save</button>
+    </div>
+  </div>
+</div>
+
+{% endblock content %} {% block scripts %}
+<script src="https://cdn.tiny.cloud/1/sozgxfg28gkwdz0upcdcf0pguivsi2gg0amwnz7c6iu4wsek/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{% static 'scripts/plugins-usage/tinymce-usage.js' %}"></script>
+<script src="{% static 'libraries/cropper/cropper.min.js' %}"></script>
+<script src="{% static 'scripts/plugins-usage/cropper-usage.js' %}"></script>
+<script>
+  const thumbnailPic = document.getElementById('thumbnailPic');
+  const thumbnailSrcData = document.getElementById('thumbnail_src_data');
+  const thumbnail = document.getElementById('thumbnail');
+  const changeThumbnail = (obj) => {
+    initiateCropperTool(obj, (imgSrc) => {
+      thumbnail.value = "";
+      if(imgSrc) thumbnailPic.src = thumbnailSrcData.value = imgSrc;
+      else {
+        thumbnailSrcData.value = "";
+        thumbnailPic.src="{% static 'images/book-stack.png' %}";
+      }
+    });
+  }
+</script>
+<script>
+  const catTitle = document.getElementById('cat-popup-title');
+  const catPopup = document.getElementById('category-popup');
+  const courseLinkBx = document.getElementById('course_link_bx');
+  const caPremiumInBx = document.getElementById('cat_premium_in_bx');
+  const catPopupForm = document.getElementById('cat-popup-form');
+  const catPopupLoading = document.getElementById('cat-popup-loading');
+
+  const catId = document.getElementById('cat_id');
+  const catStatus = document.getElementById('cat_status');
+  const catPublished = document.getElementById('cat_published');
+  const catPremium = document.getElementById('cat_premium');
+  const catMetaDescription = document.getElementById('meta_description');
+
+  async function loadcategory(category_id = null, btn = null) {
+    let parentQ = "";
+    let catBox = null;
+    if (category_id) {
+      parentQ = `?parent_id=${category_id}`;
+      catBox = document.getElementById(`cat_${category_id}_subcats`);
+    } else {
+      catBox = document.getElementById("all-cats");
+    }
+    catBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    if (btn) showIconBtnLoading(btn);
+    const result = await getFromServer(
+      `/admin/category-list${parentQ}`
+    );
+    if (btn) hideIconBtnLoading(btn);
+    catBox.innerHTML = "";
+    if (result.status) {
+      // console.log(result.data.rows);
+      if(result.data.length > 0) {
+        result.data.forEach((row) => {
+          let dataHtml = `
+          <p>
+            <span onclick="loadcategory(${row[0]}, this)" title="Expand Category"><i class="fa-solid fa-arrow-down"></i></span>
+            <b onclick="showCat(${row[0]}, \`${row[1]}\`)">${row[1]}</b>
+          </p>
+          <div style="margin-left: 20px;" id="cat_${row[0]}_subcats" data-parent-id="${row[0]}"></div>
+          `;
+          // ${row[3]
+          //   ? '<i class="fa-solid fa-square-check" style="color: green;"></i>'
+          //   : '<i class="fa-solid fa-rectangle-xmark" style="color: red;"></i>'
+          // }
+          // console.log(row);
+          catBox.insertAdjacentHTML("beforeend", dataHtml);
+        });
+      } else {
+        catBox.innerHTML = "--";
+      }
+    } else {
+      alertify.error(result.msg);
+    }
+  }
+  loadcategory();
+  const showCat = async (category_id, title) => {
+    catTitle.innerHTML = title;
+    catPopup.style.display='flex';
+    catPopupForm.style.display = 'none';
+    catPopupLoading.style.display = 'block';
+    courseLinkBx.style.display = caPremiumInBx.style.display = 'none';
+    courseLinkBx.innerHTML = '';
+    catStatus.value = catPublished.value = 1;
+    catPremium.value = 0;
+    thumbnail.value = thumbnailSrcData.value = catMetaDescription.value = "";
+    tinymce.get("description").setContent("");
+    thumbnailPic.src = "{% static 'images/book-stack.png' %}";
+    const result = await getFromServer(`/admin/category/${category_id}/details`);
+    if (result.status) {
+      const data = result.data;
+
+      catId.value = data.id;
+      catPopupForm.style.display = 'flex';
+      catPopupLoading.style.display = 'none';
+
+      catStatus.value = data.status ? 1 : 0;
+      catPublished.value = data.published ? 1 : 0;
+      catPremium.value = data.premium ? 1 : 0;
+
+      if(data.description) tinymce.get("description").setContent(data.description);
+      catMetaDescription.value = data.meta_description;
+      thumbnailPic.src = data.thumbnail ? data.thumbnail : "{% static 'images/book-stack.png' %}";
+      thumbnailSrcData.value = "no_change";
+
+      if(data.premium_allowed) {
+        if (data.course_id) {
+          courseLinkBx.innerHTML = `
+            <a href="/admin/course/${data.course_id}/edit"><i class="fa-solid fa-pen-to-square"></i> Edit Course</a>
+          `;
+        } else {
+          courseLinkBx.innerHTML = `
+            <a href="/admin/category/${data.id}/course/add"><i class="fa-solid fa-plus"></i> Create Course</a>
+          `;
+        }
+        
+        caPremiumInBx.style.display = 'flex';
+        catPremium.dispatchEvent(new Event('change'));
+      }
+
+    } else {
+      alertify.error(result.msg);
+    }
+  }
+  const closeCatPopup = () => {
+    catPopup.style.display='none';
+    catTitle.innerHTML = 'Category title';
+    catStatus.value = catPublished.value = 1;
+    catPremium.value = 0;
+    catId.value = '';
+    courseLinkBx.style.display = caPremiumInBx.style.display = 'none';
+    thumbnail.value = thumbnailSrcData.value = catMetaDescription.value = "";
+    tinymce.get("description").setContent("");
+    thumbnailPic.src="{% static 'images/book-stack.png' %}";
+  }
+  const changeCatPremium = (obj) => {
+    if(obj.value == 1) {
+      courseLinkBx.style.display = 'flex';
+    } else {
+      courseLinkBx.style.display = 'none';
+    }
+  }
+  const updateCat = async(btn) => {
+    const data = {
+      premium: catPremium.value == 1 ? true : false,
+      status: catStatus.value == 1 ? true : false,
+      published: catPublished.value == 1 ? true : false,
+      description: tinymce.get("description").getContent(),
+      meta_description: catMetaDescription.value.trim(),
+      thumbnail_src_data: thumbnailSrcData.value,
+    }
+    showBtnLoading(btn);
+    const result = await postToServer(`/admin/category/${catId.value}/details`, data);
+    hideBtnLoading(btn);
+    if (result.status) {
+      closeCatPopup();
+      alertify.success(result.msg);
+      loadcategory();
+    } else {
+      alertify.error(result.msg);
+    }
+  }
+</script>
+{% endblock scripts %}

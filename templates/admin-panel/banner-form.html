@@ -1,0 +1,149 @@
+{% extends 'layouts/admin-layout.html' %} {% block styles %}
+<style>
+  #select-topics .form p.check.full {
+    margin: 0;
+  }
+  #select-topics .form p.cat-g-title {
+    width: 100%;
+    font-weight: bold;
+    color: gray;
+  }
+</style>
+{% endblock styles %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">Banner</h1>
+    <div class="divider"></div>
+    <form method="POST" class="form" enctype="multipart/form-data">
+      {% csrf_token %}
+      <p>
+        <label for="title">Title:</label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          value="{{banner.title}}"
+          required
+          maxlength="255"
+          placeholder="Banner title"
+        />
+      </p>
+      <p>
+        <label for="url">Banner url:</label>
+        <input
+          type="url"
+          name="url"
+          id="url"
+          value="{{banner.url}}"
+          required
+          placeholder="https://example.com"
+        />
+      </p>
+      <p>
+        <label for="id_status">Status:</label>
+        <select
+          name="status"
+          id="id_status"
+          value="{{banner.first_name}}"
+          required
+        >
+        <option value="1" {% if banner and banner.status == True %}selected{% endif %}>Active</option>
+        <option value="0" {% if banner and banner.status != True %}selected{% endif %}>InActive</option>
+        </select>
+      </p>
+      <p>
+        <label for="poster">Poster:</label>
+        {% if banner and banner.poster %}
+        <input type="file" name="poster" id="poster" />
+        <a href="{{banner.poster.url}}" target="_blank">click here to see existing poster</a>
+        {% else %}
+        <input type="file" name="poster" id="poster" required />
+        {% endif %}
+      </p>
+      <div style="width: 100%;">
+        <label class="label">Categories:</label>
+        <div class="badge-box" id="selected-topics" onclick="showFlexPopup('select-topics');"></div>
+        <input type="hidden" id="categories" name="categories">
+      </div>
+
+      <div class="btn-box">
+        <button type="button" class="btn secondary" onclick="history.back()">
+          Cancel
+        </button>
+        <span>&nbsp;</span>
+        <button type="Submit" class="btn primary" id="save-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+<!-- --------------- all popups --------------- -->
+<div class="popup" id="select-topics">
+  <div class="overlay" onclick="this.parentNode.style.display='none'"></div>
+  <div class="content">
+    <h2 style="display: inline-block; margin-top: -5px">
+      <i class="fa-sharp fa-solid fa-filter"></i>
+      Select topics
+    </h2>
+    <span onclick="hideFlexPopup('select-topics')" id="close-btn">
+      <i class="fa-solid fa-rectangle-xmark"></i>
+    </span>
+    <div class="divider"></div>
+    <div class="form" id="banner-cat-list" style="max-height: 70vh; overflow: auto;"></div>
+    <br />
+    <div style="text-align: end">
+      <button class="btn primary" onclick="hideFlexPopup('select-topics')">Ok</button>
+    </div>
+  </div>
+</div>
+{% endblock content %}{% block scripts %}
+<script>
+  // --------------- user category selection ---------------
+  const loadSelectedCats = async () => {
+    const result = await getFromServer(`/admin/banner-categories/{% if banner %}{{banner.id}}{% else %}0{% endif %}`);
+    if (result.status) {
+      const bannerCatList = document.getElementById("banner-cat-list");
+      const parentCats = result.data.parent_categories;
+      const subCats = result.data.sub_categories;
+      const bannerCatIds = result.data.banner_categories;
+      bannerCatList.innerHTML = "";
+      let html = "";
+      bannerCatList.insertAdjacentHTML("beforeend", `<div class="full" id="b_cat_box_0"></div>`);
+      parentCats.forEach((parentCat) => {
+        html = `
+          <p class="cat-g-title">${parentCat[1]}</p>
+          <div style="margin-left: 20px;" id="b_cat_box_${parentCat[0]}"></div>
+        `;
+        bannerCatList.insertAdjacentHTML("beforeend", html);
+      });
+      let target = null;
+      html = "";
+      subCats.forEach((subCat) => {
+        target = document.getElementById(`b_cat_box_${subCat[2]}`);
+        if (!target) target = document.getElementById("b_cat_box_0");
+          html = `
+            <p class="check full">
+              <input type="checkbox" id="b_cat_${subCat[0]}" data-title="${subCat[1]}" value="${subCat[0]}" ${bannerCatIds.includes(subCat[0]) && 'checked'} onchange="selectCats()" />
+              <label for="b_cat_${subCat[0]}">${subCat[1]}</label>
+            </p>
+          `;
+          target.insertAdjacentHTML("beforeend", html);
+      });
+      selectCats();
+    } else alertify.error(result.msg);
+  };
+  loadSelectedCats();
+  const selectCats = () => {
+    const bannerCats = document.querySelectorAll("#banner-cat-list input[type=checkbox]:checked");
+    const bannerCatArr = [];
+    let selectedCatsHtml = "";
+    bannerCats.forEach(bannerCat => {
+      bannerCatArr.push(parseInt(bannerCat.value));
+      selectedCatsHtml += `<span>${bannerCat.getAttribute('data-title')}</span>`;
+    });
+    document.getElementById('selected-topics').innerHTML = selectedCatsHtml;
+    document.getElementById('categories').value = bannerCatArr.toString();
+  }
+</script>
+{% endblock scripts %}

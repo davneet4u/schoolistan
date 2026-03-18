@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>{% block title %}Schoolistan{% endblock title %}</title>
+    {% block meta_tags %}{% endblock meta_tags %}
+    <!-- favicon icon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" />
+    <!-- libraries -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'libraries/alertify.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'over-ride-libs/style.css' %}" />
+    <!-- Custom -->
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}?v=0.46" />
+    <link rel="stylesheet" href="{% static 'styles/responsive.css' %}?v=0.12" />
+    {% block styles %}{% endblock styles %}
+  </head>
+  <body>
+    <div id="messages" style="display: none">
+      {% for message in messages %}
+      <span>{{ message.tags }}||||{{ message }}</span>
+      {% endfor %}
+    </div>
+    <nav class="nav"> <!-- user-nav -->
+      <div class="menu-btn-box">
+        <a href="javascript:void(0);" onclick="handleMenu(1)"><i class="fa-solid fa-bars"></i></a>
+      </div>
+      <a href="/" class="logo">schoolistan</a>
+      <div class="middle" id="drawer">
+        <div class="logo-box">
+          <a href="/" class="logo">schoolistan</a>
+          <a href="javascript:void(0);" onclick="handleMenu(0)">
+            <i class="fa-solid fa-xmark"></i>
+          </a>
+        </div>
+        <a href="/courses">Courses</a>&nbsp;&nbsp;
+      </div>
+      <div class="right">
+        {% if request.user.is_authenticated %}
+        <div class="dropdown">
+          <button class="dropbtn" style="border-radius: 30px; display: flex">
+            <img src="{% if request.user.profile_pic %}{{request.user.profile_pic.url}}{% else %}{% static 'images/user.png' %}{% endif %}" class="profile" alt="Profile" />
+          </button>
+          <div class="dropdown-content">
+            <a href="/account/{{request.user.username}}">Profile Page</a>
+            <a href="/account/profile">Edit Profile</a>
+            <a href="/account/payments">Payments & Subscriptions</a>
+            <a href="/logout">Logout</a>
+          </div>
+        </div>
+        {% else %}
+        <a href="/login">
+          <img src="{% static 'images/user.png' %}" class="profile" alt="Profile" />
+        </a>
+        {% endif %}
+      </div>
+    </nav>
+    {% block content %}{% endblock content %}
+    <div class="loading" id="loading">
+      <div class="overlay"></div>
+      <img src="{% static 'images/loading.svg' %}" alt="Loading">
+    </div>
+    <a class="float-i-btn" title="Add" href="/post/post/create">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </a>
+    <div class="popup" id="share-popup">
+      <div class="overlay" onclick="closeSharePopup();"></div>
+      <div class="content">
+        <h2 style="display: inline-block; margin-top: -5px">
+          <i class="fa-solid fa-share-nodes"></i> <span id="share-head">Share</span>
+        </h2>
+        <i id="close-btn" class="fa-solid fa-rectangle-xmark" onclick="closeSharePopup();"></i>
+        <div class="divider"></div>
+        <div id="share-medias" class="share-medias">
+          <a href="#" class="w" id="share-w"><i class="fa-brands fa-whatsapp"></i></a>
+          <!-- <a href="#" class="f"><i class="fa-brands fa-facebook-f"></i></a> -->
+          <a href="#" class="m" id="share-m"><i class="fa-sharp fa-solid fa-envelope"></i></a>
+        </div>
+        <div class="share-link-bx">
+          <span id="share-link"></span>
+          &nbsp;
+          <button id="share-copy-btn" class="btn pri sm"><i class="fa-solid fa-copy"></i> Copy</button>
+        </div>
+      </div>
+    </div>
+    <!-- <script src="{% static 'scripts/block-devtools.js' %}"></script> -->
+    <script src="{% static 'libraries/alertify.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+    <script src="{% static 'scripts/requests.js' %}?v=0.03"></script>
+    <script src="{% static 'scripts/common.js' %}?v=0.16"></script>
+    <script src="{% static 'scripts/index.js' %}?v=0.04"></script>
+    {% block scripts %}{% endblock scripts %}
+  </body>
+</html>

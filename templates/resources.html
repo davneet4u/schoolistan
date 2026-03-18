@@ -1,0 +1,51 @@
+<p>
+    <label for="sub_category">
+      Sub Category
+      <a
+        href="javascript:void(0);"
+        onclick="document.getElementById('add-sub-category').style.display='flex';"
+        title="Add a new sub category"
+        ><i class="fa-solid fa-plus"></i
+      ></a>
+    </label>
+    <select name="sub_category" id="sub_category">
+      <option value="">Select sub category</option>
+    </select>
+  </p>
+
+<div class="popup" id="add-sub-category">
+    <div class="overlay" onclick="this.parentNode.style.display='none'"></div>
+    <div class="content">
+      <h2 style="display: inline-block; margin-top: -5px">
+        <i class="fa-solid fa-plus"></i> Add a sub category
+      </h2>
+      <i
+        id="close-btn"
+        class="fa-solid fa-rectangle-xmark"
+        onclick="this.parentNode.parentNode.style.display='none'"
+      ></i>
+      <div class="divider"></div>
+      <div class="form">
+        <p class="full">
+          <label for="category">Category</label>
+          <select id="category_2">
+            <option value="">Select category</option>
+          </select>
+        </p>
+        <p class="full">
+          <label for="sub_cat_title">Sub category:</label>
+          <input
+            type="text"
+            placeholder="Sub category"
+            id="sub_cat_title"
+            maxlength="255"
+          />
+        </p>
+      </div>
+      <div style="text-align: end">
+        <button class="btn pri" onclick="createSubCategory(this)">
+          <i class="fa-solid fa-floppy-disk"></i> Save sub category
+        </button>
+      </div>
+    </div>
+  </div>

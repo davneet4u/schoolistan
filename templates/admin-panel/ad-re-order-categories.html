@@ -1,0 +1,129 @@
+{% extends 'layouts/admin-layout.html' %} {% load static %} {% block styles %}
+<style>
+  #select-categories .form p.check.full {
+    margin: 0;
+  }
+  .filter-row {display: flex; align-items: center}
+  .filter-row div {flex: 1;}
+  a {
+    text-decoration: none;
+  }
+  /* -------------------- */
+  .draggable-cont > div {
+    cursor: move;
+    padding: 10px;
+    margin: 10px 0;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border: 3px dotted transparent;
+  }
+  .draggable-cont > div:hover, .draggable-cont > .dragging {
+    border: 3px dotted #666;
+  }
+  #save-btn, #no-items {
+    display: none;
+  }
+</style>
+{% endblock styles %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">Re order categories</h1>
+    <div class="divider"></div>
+    <div class="filter-row">
+      <input type="hidden" id="categories" name="categories">
+      <div class="badge-box" id="categories-holder" onclick="document.getElementById('select-categories').style.display='flex';"></div>
+      &nbsp;
+      <p><button class="btn primary" onclick="loadCategorySeries(this)"><i class="fa-solid fa-right-long"></i></button></p>
+    </div>
+    <div>
+      <div id="draggable-loading" style="display: none; justify-content: center; align-items: center; min-height: 100px;">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div><br>
+      <h3 id="cat_name"></h3>
+      <input type="hidden" name="category_for_order" id="category_for_order" />
+      <p id="no-items">No categories found.</p>
+      <div class="draggable-cont" id="draggable-cont"></div>
+      <button class="btn primary" id="save-btn" onclick="saveOrder(this)">Save order</button>
+    </div>
+  </div>
+</main>
+<!-- --------------- all popups --------------- -->
+<div class="popup" id="select-categories">
+    <div class="overlay" onclick="this.parentNode.style.display='none'"></div>
+    <div class="content">
+      <h2 style="display: inline-block; margin-top: -5px">
+        <!--<i class="fa-solid fa-plus"></i>-->
+        Select only one category
+      </h2>
+      <i id="close-btn" class="fa-solid fa-rectangle-xmark" onclick="this.parentNode.parentNode.style.display='none'"></i>
+      <div class="divider"></div>
+      <div class="form" id="all-cats" style="max-height: 70vh; overflow: auto"></div>
+      <div style="text-align: end">
+        <button class="btn primary" onclick="document.getElementById('select-categories').style.display='none';">OK</button>
+      </div>
+    </div>
+  </div>
+  
+{% endblock content %} {% block scripts %}
+<script src="{% static 'scripts/categories.js' %}?v=0.03"></script>
+<script src="{% static 'scripts/draggable.js' %}?v=0.01"></script>
+<script>
+  loadCategories();
+  const draggableCont = document.getElementById('draggable-cont');
+  const draggableLoading = document.getElementById('draggable-loading');
+  const catName = document.getElementById('cat_name');
+  const categoryForOrder = document.getElementById('category_for_order');
+  const loadCategorySeries = async(btn) => {
+    if(categories.value != '') {
+      const saveBtn = document.getElementById('save-btn');
+      const noItems = document.getElementById('no-items');
+      draggableCont.innerHTML = catName.innerHTML = categoryForOrder.value = "";
+      showIconBtnLoading(btn);
+      draggableLoading.style.display = 'flex';
+      saveBtn.style.display = noItems.style.display = 'none';
+      const result = await getFromServer(`/admin/category/${categories.value}/category-series`);
+      hideIconBtnLoading(btn);
+      draggableLoading.style.display = 'none';
+      if (result.status) {
+        catName.innerHTML = result.data.cat_title;
+        categoryForOrder.value = result.data.cat_id;
+        if(result.data.rows.length) {
+          saveBtn.style.display = 'inline-block';
+          result.data.rows.forEach(row => {
+            draggableCont.insertAdjacentHTML(
+              "beforeend",
+              `<div draggable="true" data-category-id="${row[0]}">
+                <p>${row[1]}</p>
+                <p style="text-align: end;"><b>${row[2] ? 'Active' : 'InActive'}</b></p>
+              </div>`
+            );
+          });
+          initiateDraggable();
+        } else {
+          noItems.style.display = 'block';
+        }
+      } else {
+        alertify.error(result.msg);
+      }
+    } else {
+      draggableCont.innerHTML = catName.innerHTML = categoryForOrder.value = "";
+      alert("Please select a category to proceed.");
+    }
+  }
+  const saveOrder = async (btn) => {
+    showBtnLoading(btn);
+    const draggableList = draggableCont.children;
+    const draggableCount = draggableList.length;
+    const order = [];
+    for (let i = 0; i < draggableCount; i++) {
+      order.push(draggableList[i].getAttribute('data-category-id'));
+    }
+    const result = await postToServer(`/admin/category/${categoryForOrder.value}/category-series`, {order: order});
+    hideBtnLoading(btn);
+    if (result.status) {
+      alertify.success(result.msg);
+    } else {
+      alertify.error(result.msg);
+    }
+  }
+</script>
+{% endblock scripts %}

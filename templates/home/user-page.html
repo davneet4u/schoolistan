@@ -1,0 +1,80 @@
+{% extends 'layouts/user-layout.html' %}{% load static %}{% block styles %}
+<style>
+  #select-topics .form p.check.full {
+    margin: 0;
+  }
+  #select-topics .form p.cat-g-title {
+    width: 100%;
+    font-weight: bold;
+    color: gray;
+  }
+</style>
+{% endblock styles %}{% block content %}
+<main class="main">
+  {% comment %}<div class="user-banner"></div>{% endcomment %}
+  <div class="container">
+    <div style="display: flex; align-items: center;">
+      <div class="topics" style="overflow: auto">
+        {% for user_cat in user_cats %}
+        <a href="/category/{{user_cat.p_slug}}/{{user_cat.slug}}" class="topic">
+          <img src="{% if user_cat.thumbnail %}{{user_cat.thumbnail.url}}{% else %}{% static 'images/book-stack.png' %}{% endif %}" alt="" />
+          <b>{{user_cat.title}}</b>
+        </a>
+        {% endfor %}
+      </div>
+      <div style="margin-left: 15px;">
+        <button class="icon-btn" title="Add more" onclick="addMoreTopics(this)">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    <h2 style="margin-bottom: 20px">Posts for you</h2>
+    <div id="data-box"></div><br />
+    <div id="data-loading" class="tx-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+    <div class="tx-center"><button id="load-more-post-btn" class="btn pri">View More Posts</button></div>
+  </div>
+</main>
+<!-- --------------- all popups --------------- -->
+<div class="popup" id="select-topics">
+  <div class="overlay" onclick="this.parentNode.style.display='none'"></div>
+  <div class="content">
+    <h2 style="display: inline-block; margin-top: -5px">
+      <i class="fa-sharp fa-solid fa-filter"></i>
+      Select topics
+    </h2>
+    <span onclick="hideFlexPopup('select-topics')" id="close-btn">
+      <i class="fa-solid fa-rectangle-xmark"></i>
+    </span>
+    <div class="divider"></div>
+    <div class="form" id="user-cat-list" style="max-height: 70vh; overflow: auto;"></div>
+    <div style="text-align: end">
+      <button class="btn sec" onclick="hideFlexPopup('select-topics')">Cancel</button>
+      <button class="btn pri" onclick="saveUserCategories(this)">Save</button>
+    </div>
+  </div>
+</div>
+{% endblock content %}{% block scripts %}
+<script>
+  const user_id = {{request.user.id}};
+  const is_teacher = {% if request.user.role <= 3 %}true{% else %}false{% endif %};
+  const mediaUrl = "{{MEDIA_URL}}";
+  const userPic = "{% static 'images/user.png' %}";
+  const posts_url = "/post/post-list?featured=1{% if user_cats_str %}&category_ids={{user_cats_str}}{% endif %}";
+  const bannerUrl = "/banner-list{% if user_cats_str %}?category_ids={{user_cats_str}}{% endif %}";
+</script>
+<script src="{% static 'scripts/swipe-handle.js' %}?v=0.03"></script>
+<script src="{% static 'scripts/posts-view.js' %}?v=0.25"></script>
+<script src="{% static 'scripts/user-home.js' %}?v=0.03"></script>
+<script>
+  const addMoreTopics = async (btn) => {
+    showIconBtnLoading(btn);
+    await loadSelectedCats();
+    hideIconBtnLoading(btn);
+  }
+</script>
+{% if not user_cats %}
+<script>
+loadSelectedCats();
+</script>
+{% endif %}
+{% endblock scripts %}

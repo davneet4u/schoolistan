@@ -1,0 +1,147 @@
+{% extends 'layouts/user-layout.html' %} {% load static %} {% load custom_date_tags %} {% block styles %}
+<link rel="stylesheet" href="{% static 'libraries/cropper/cropper.min.css' %}">
+{% endblock styles %} {% block content %}
+<main class="main">
+  <div class="container">
+    <h2 style="margin-bottom: 10px">Profile information</h2>
+    <div style="text-align: center">
+      <img
+        onclick="document.getElementById('profile_pic').click()"
+        style="width: 200px; height: 200px; border-radius: 100px; cursor: pointer;"
+        src="{% if request.user.profile_pic %}{{request.user.profile_pic.url}}{% else %}{% static 'images/user.png' %}{% endif %}"
+        alt="Profile Picture"
+        id="profile_pic_img"
+      />
+      <input style="display: none;" type="file" accept="image/*" id="profile_pic" onchange="changeProfilePic(this)" />
+    </div>
+    <form method="POST" class="form" enctype="multipart/form-data" onsubmit="event.preventDefault(); updateProfile(this);">
+      {% csrf_token %}
+      <input type="hidden" name="profile_pic_src_data" id="profile_pic_src_data" value="no_change" />
+      <p>
+        <label for="fname">First name:</label>
+        <input
+          type="text"
+          name="fname"
+          id="fname"
+          value="{{request.user.first_name}}"
+          maxlength="255"
+          placeholder="First name"
+        />
+      </p>
+      <p>
+        <label for="lname">Last name:</label>
+        <input
+          type="text"
+          name="lname"
+          id="lname"
+          value="{{request.user.last_name}}"
+          maxlength="255"
+          placeholder="Last name"
+        />
+      </p>
+      <h3>ACCOUNT DETAILS</h3>
+      <p></p>
+      <p>
+        <label for="uname">
+          Username:
+          <a href="javascript:void(0);" onclick="openUnameEdit()"><i class="fa-solid fa-pen-to-square"></i></a>
+        </label>
+        <input type="text" value="{{request.user.username}}" disabled />
+      </p>
+      <p>
+        <label for="email">Email id:</label>
+        <input type="email" value="{{request.user.email}}" disabled />
+      </p>
+      <p>
+        <label for="mobile no">Mobile No:</label>
+        <input
+          type="number"
+          name="mobile"
+          id="mobile"
+          value="{{request.user.mobile}}"
+          onkeypress="return validatePhoneNo(event, this)"
+          placeholder="Mobile number"
+        />
+      </p>
+      <p>
+        <label for="birthday">My birthday fall on:</label>
+        <input type="date" name="birthday" value="{{dob}}" id="birthday" />
+      </p>
+      <p class="full">
+        <label for="about">About:</label>
+        <textarea name="about" id="about" rows="3" maxlength="500">{% if profile.about %}{{profile.about}}{% endif %}</textarea>
+      </p>
+      <div class="btn-box">
+        <button type="button" class="btn sec" onclick="history.back()">
+          Cancel
+        </button>
+        <span>&nbsp;</span>
+        <button type="Submit" class="btn pri" id="saveBtn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+  </div>
+  <br /><br />
+</main>
+<!-- --------------- all popups --------------- -->
+<div class="popup" id="username-edit-bx">
+  <div class="overlay" onclick="this.parentNode.style.display='none'"></div>
+  <div class="content">
+    <h2 style="display: inline-block; margin-top: -5px">
+      <i class="fa-solid fa-pen-to-square"></i> Change username
+    </h2>
+    <i id="close-btn" class="fa-solid fa-rectangle-xmark" onclick="this.parentNode.parentNode.style.display='none'"></i>
+    <div class="divider"></div>
+    <div style="display: flex;">
+      <input type="text" id="uname_input" maxlength="255" class="input" value="{{request.user.username}}" style="flex: 1;" />
+      &nbsp;<button class="btn primary" onclick="updateUname()"><i class="fa-solid fa-floppy-disk"></i></button>
+    </div>
+  </div>
+</div>
+<!-- --------------- popups end --------------- -->
+{% endblock content %} {% block scripts %}
+<script src="{% static 'libraries/cropper/cropper.min.js' %}"></script>
+<script src="{% static 'scripts/plugins-usage/cropper-usage.js' %}"></script>
+<script>
+  const profilePicImg = document.getElementById('profile_pic_img');
+  const profilePicSrcData = document.getElementById('profile_pic_src_data');
+  const changeProfilePic = (obj) => {
+    initiateCropperTool(obj, (imgSrc) => {
+      obj.value = "";
+      if(imgSrc) profilePicImg.src = profilePicSrcData.value = imgSrc;
+      else {
+        profilePicSrcData.value = "";
+        profilePicImg.src="{% static 'images/user.png' %}";
+      }
+    });
+  }
+  const mobileEle = document.getElementById('mobile');
+  const updateProfile = (form) => {
+    const mobileNo = mobileEle.value;
+    if(mobileNo == '') {
+      alertify.alert("Please enter mobile number to save profile.", function() {}).setHeader("<em> Save Profile </em> ");
+    } else if (mobileNo.length != 10) {
+      alertify.alert("Please enter valid mobile number to save profile.", function() {}).setHeader("<em> Save Profile </em> ");
+    } else {
+      form.submit();
+      showBtnLoading(document.getElementById('saveBtn'));
+    } 
+  }
+  const openUnameEdit = () => document.getElementById('username-edit-bx').style.display='flex';
+  const updateUname = async () => {
+    const unameInput = document.getElementById('uname_input');
+    const correct = /^[a-z0-9]*$/.test(unameInput.value);
+    if(correct) {
+      startLoading();
+      const result = await postToServer(`/account/update-username`, {username: unameInput.value});
+      stopLoading();
+      if (result.status) {
+        window.location.reload();
+      } else {
+        alertify.error(result.msg);
+      }
+    } else alert("Username can contain only small letters and numbers.\nCapital letters, Spaces and special characters are not allowed.")
+  }
+</script>
+{% endblock scripts %}

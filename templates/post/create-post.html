@@ -1,0 +1,241 @@
+{% extends 'layouts/user-layout.html' %}{% load static %} {% block styles %}
+<style>
+  #images_box img,
+  #videos_box video {
+    border: 2px solid black;
+    margin: 5px 5px 5px 0;
+  }
+  #images_box img {
+    height: 150px;
+  }
+  #images_box,
+  #videos_box {
+    width: 100%;
+  }
+  #select-categories .form p.check.full {
+    margin: 0;
+  }
+  #meta1, #meta2 {display: none;}
+</style>
+{% endblock styles %} {% block content %}
+<main class="main">
+  {% comment %}
+  <div class="user-banner"></div>
+  {% endcomment %}
+  <div class="container">
+    <h2 style="margin-bottom: 10px">Share your Knowledge</h2>
+    <form
+      method="POST"
+      class="form"
+      onsubmit="event.preventDefault(); uploadPost(this);"
+      enctype="multipart/form-data"
+    >
+      {% csrf_token %}
+      <p class="full">
+        <label for="title">Title:</label>
+        <input
+          type="title"
+          name="title"
+          id="title"
+          maxlength="255"
+          value="{% if post and post.title %}{{post.title}}{% endif %}"
+          onblur="afterTitleBlured(this)";
+        />
+        <!-- required -->
+      </p>
+
+      {% if request.user.role <= 3 %}
+      <div style="width: 100%;">
+        <input type="hidden" id="categories" name="categories">
+        <label class="label">Categories:</label>
+        <div class="badge-box" id="categories-holder" onclick="document.getElementById('select-categories').style.display='flex';"></div>
+      </div>
+      {% endif %}
+
+      <p class="full">
+        <label for="description">Text:</label>
+        <textarea id="description" class="editor" rows="10">{% autoescape off %}{% if post and post.text %}{{post.text}}{% endif %}{% endautoescape %}</textarea>
+      </p>
+
+      <div style="display: none">
+        <input type="hidden" name="premium" id="premium" />
+        <input type="hidden" name="featured" id="featured" />
+        <input
+          type="file"
+          name="image"
+          id="image"
+          accept="image/*"
+          multiple
+          onchange="changeImages(this)"
+        />
+        <input
+          type="file"
+          name="video"
+          id="video"
+          accept="video/*"
+          multiple
+          onchange="changeVideos(this)"
+        />
+      </div>
+
+      <p class="full" id="youtube_box" style="{% if not youtube or not youtube.attachment %}display: none{% endif %}">
+        <label for="youtube">Youtube link:</label>
+        <input
+          type="url"
+          name="youtube"
+          id="youtube"
+          placeholder="https://www.youtube.com/watch?v=tgbNymZ7vqY"
+          maxlength="255"
+          value="{% if youtube and youtube.attachment %}https://www.youtube.com/watch?v={{youtube.attachment}}{% endif %}"
+        />
+      </p>
+
+      <div id="images_box">
+        {% for image in images %}
+        <img src="{{MEDIA_URL}}{{image.attachment}}" />
+        {% endfor %}
+      </div>
+      <div id="videos_box">
+        {% for video in videos %}
+        <video width="" height="150px" controls>
+          <source src="{{MEDIA_URL}}{{video.attachment}}" type="video/mp4" />
+        </video>
+        {% endfor %}
+      </div>
+
+      <div class="full">
+        {% if request.user.role <= 3 %}
+        <button
+          type="button"
+          onclick="makePremium(this)"
+          class="i-btn"
+          title="Premium"
+          id="premium-btn"
+        >
+          <i class="fa-solid fa-crown"></i>
+        </button>
+        <button
+          type="button"
+          onclick="makeFeatured(this)"
+          class="i-btn"
+          title="Featured"
+          id="featured-btn"
+        >
+          <i class="fa-solid fa-award"></i>
+        </button>
+        {% endif %}
+        <button type="button" onclick="addImage()" class="i-btn">
+          <i class="fa-solid fa-image"></i>
+        </button>
+        <button type="button" onclick="addVideo()" class="i-btn">
+          <i class="fa-solid fa-film"></i>
+        </button>
+        <button
+          type="button"
+          onclick="addYoutubeLink(this)"
+          class="i-btn {% if youtube and youtube.attachment %}active{% endif %}"
+        >
+          <i class="fa-brands fa-youtube"></i>
+        </button>
+        <!-- <button class="i-btn"><i class="fa-brands fa-instagram"></i></button> -->
+      </div>
+
+      <button type="button" onclick="showHideMeta(this)" data-display="0" class="btn pri sm">Meta Informations</button>
+      <p class="full" id="meta1">
+        <label for="meta_description">Meta Description</label>
+        <textarea id="meta_description" maxlength="255" rows="2">{% if post and post.meta_description %}{{post.meta_description}}{% endif %}</textarea>
+      </p>
+
+      <p class="full" id="meta2">
+        <label for="transcript">Transcript:</label>
+        <textarea id="transcript" rows="4">{% if post and post.transcript %}{{post.transcript}}{% endif %}</textarea>
+      </p>
+
+      <div class="btn-box">
+        <button type="button" class="btn sec" onclick="history.back()">
+          Cancel
+        </button>
+        <span>&nbsp;</span>
+        <button type="Submit" class="btn pri" id="submit-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+<!-- --------------- all popups --------------- -->
+<div class="popup" id="select-categories">
+  <div class="overlay" onclick="this.parentNode.style.display='none'"></div>
+  <div class="content">
+    <h2 style="display: inline-block; margin-top: -5px">
+      <!--<i class="fa-solid fa-plus"></i>-->
+      Select categories
+    </h2>
+    <i id="close-btn" class="fa-solid fa-rectangle-xmark" onclick="this.parentNode.parentNode.style.display='none'"></i>
+    <div class="divider"></div>
+    <div class="form" id="all-cats" style="max-height: 70vh; overflow: auto"></div>
+    <div style="text-align: end">
+      <button class="btn pri" onclick="document.getElementById('select-categories').style.display='none';">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="file-upload-progress">
+  <div class="overlay" onclick="//this.parentNode.style.display='none'"></div>
+  <div class="content">
+    <h3>Uploading <span id="fileCounter" style="float: right"></span></h3>
+    <!-- <i id="close-btn" class="bi bi-x-lg"></i> -->
+    <div class="divider"></div>
+    <p style="min-height: 20px" id="progress"></p>
+  </div>
+</div>
+
+{% endblock content %}{% block scripts %}
+<script src="https://cdn.tiny.cloud/1/sozgxfg28gkwdz0upcdcf0pguivsi2gg0amwnz7c6iu4wsek/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{% static 'scripts/plugins-usage/tinymce-usage.js' %}"></script>
+<script>
+  const is_teacher = {% if request.user.role <= 3 %}true{% else %}false{% endif %};
+  const showHideMeta = (btn) => {
+    if(btn.getAttribute('data-display') == 1) {
+      btn.setAttribute('data-display', 0);
+      document.getElementById('meta1').style.display = 'none';
+      document.getElementById('meta2').style.display = 'none';
+    } else {
+      btn.setAttribute('data-display', 1);
+      document.getElementById('meta1').style.display = 'flex';
+      document.getElementById('meta2').style.display = 'flex';
+    }
+  }
+</script>
+<script src="{% static 'scripts/categories.js' %}?v=0.03" multiple="1"></script>
+<script src="{% static 'scripts/posts.js' %}?v=0.11"></script>
+{% if request.user.role <= 3 %}
+<script>
+  {% if post.premium %}makePremium(document.getElementById('premium-btn')){% endif %}
+  {% if post.featured %}makeFeatured(document.getElementById('featured-btn')){% endif %}
+</script>
+{% endif %} {% if post %}
+<script>
+  // document.getElementById('category-holder').click();
+  const categoryBranches = {{category_branches}};
+  const editPostInitialTasksLoad = async () => {
+    startLoading();
+    await loadCategories();
+    for (let i = 0; i < categoryBranches.length; i++) {
+      const catBranch = categoryBranches[i];
+      for (let j = 0; j < catBranch.length; j++) {
+        const catId = catBranch[j];
+        const catInput = document.getElementById(`cat_${catId}`);
+        catInput.setAttribute('checked', true);
+        await changeCategories(catInput);
+      }
+    }
+    stopLoading();
+  }
+  editPostInitialTasksLoad();
+</script>
+{% else %}
+<script>
+  loadCategories();
+</script>
+{% endif %} {% endblock scripts %}

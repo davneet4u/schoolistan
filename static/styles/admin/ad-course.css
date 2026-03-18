@@ -1,0 +1,107 @@
+/* --------------- tooltip --------------- */
+.tooltip {
+  position: relative;
+}
+.tooltip:before {
+  content: attr(data-text);
+  position: absolute;
+  bottom: 40px;
+
+  /* basic styles */
+  padding: 8px 15px;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  display: none;
+}
+.tooltip:after {
+  content: "";
+  position: absolute;
+  bottom: 21px;
+  /* the arrow */
+  border: 10px solid #000;
+  border-color: black transparent transparent transparent;
+  display: none;
+}
+.tooltip:hover:before,
+.tooltip:hover:after {
+  display: block;
+}
+/* --------------- stepper --------------- */
+.stepper {
+  display: flex;
+  align-items: center;
+}
+.stepper .step {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  font-size: 18px;
+  box-sizing: border-box;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: #bbbbbb;
+  border: 3px solid #bbbbbb;
+}
+.stepper .step.active {
+  border-color: #030848;
+  cursor: pointer;
+}
+.stepper .step.done {
+  border-color: #030848;
+  background-color: #030848;
+  cursor: pointer;
+}
+.stepper .line {
+  flex: 1;
+  height: 5px;
+  background-color: #bbbbbb;
+}
+.stepper .line.done {
+  background-color: #030848;
+}
+/* --------------- course related --------------- */
+.units-cont {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.units-cont .unit {
+  width: 48%;
+  padding: 15px 15px 10px 15px;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;
+}
+.units-cont .unit .topics-cont {
+  width: 100%;
+}
+.units-cont .unit .topics-cont p {
+  flex-direction: row;
+  width: auto;
+  align-items: center;
+}
+.units-cont .unit .topics-cont p input {
+  /* flex: 1; */
+  width: 100%;
+}
+.units-cont .unit .topics-cont p span {
+  padding-left: 10px;
+}
+.units-cont .unit span {
+  cursor: pointer;
+}
+.units-cont h3 span {
+  float: right;
+}
+@media (max-width: 767px) {
+  .units-cont .unit {
+    width: 100%;
+  }
+}

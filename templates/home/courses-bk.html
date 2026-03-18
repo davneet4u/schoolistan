@@ -1,0 +1,204 @@
+{% extends 'layouts/home-layout.html' %}{% load static %}{% block styles %}
+<style>
+  .course-head h1 {
+    font-size: 64px;
+  }
+  .course-head {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px 20px;
+  }
+  .colored {
+    color: #0bb2ad;
+  }
+  .course-include {
+    border-radius: 1em;
+    border: 2px solid #0bb2ad;
+    padding: 1.5em;
+    height: fit-content;
+  }
+  .course-head > div {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+{% endblock styles %}{% block content %}
+<main class="main">
+  <div class="container course-head" style="background-color: black; color: white;">
+    <div>
+      <h1>Learn Accounts Tax Practically - <span class="colored">Join GST Efiling Course</span></h1><br />
+      <h2>by <span class="colored">CA Maninder Singh</span></h2><br />
+      <div class="para-box">
+        <p>The only way to learn gst efiling is by Practice Practice and more Practice</p>
+        <p>To solve this purpose,we have launched Live  CLases where you will be doing different assignments in gst efiling with us and learn new skill every day</p>
+        <p>This will not be a theoretical class</p>
+        <p>It will be a practical workshop where we will be sharing different gst efiling data of Companies and make you do different work along with us</p>
+        <p>If you are stuck, you can ask us out live</p>
+        <p>Recorded video access will also be provided for your convenience which you can access anytime.</p>
+        <p>Classes wil be undertaken in Evening after office timings</p>
+        <p>50% discount in Course Fees. Fees for Course is now at Rs  2500(5000 Less 50% Discount) and duration is 1 to 2 months depending upon speed</p>
+      </div>
+      <br />
+      <a href="/payments/paynow" class="btn pri">Course @ <del>&#8377;5000</del> &#8377;2500. Book Now </a>
+    </div>
+    <div class="course-include">
+      <h2>What will <span class="colored">GST Practical Training</span> Include?</h2><br />
+      <div class="para-box">
+        <p>We will learn Practically how to handle GST Statutory compliances of a company</p>
+        <p>This includes the following</p>
+        <ul>
+          <li>Making GST Computations in Excel</li>
+          <li>Passing Entries in Tally</li>
+          <li>Depositing GST Challans</li>
+          <li>E Filing GST Returns</li>
+          <li>Using Different GST Softwares and utilities</li>
+        </ul>
+        <p>Don't miss this opportunity to enhance your GST skills and add most wanted skill in your resume</p>
+        <p><b>Note:</b>  Basic knowledge of Excel is required to join this course</p>
+      </div>
+      <br />
+      <a href="/payments/paynow" class="btn pri">Course @ <del>&#8377;5000</del> &#8377;2500. Book Now </a>
+    </div>
+  </div>
+  <div class="container">
+    <h1 style="text-align: center;">What will you learn?</h1><br /><br />
+    <div class="double-box">
+      <div class="explain-box">
+        <h4>Unit 1: Basics of GST</h4>
+        <div class="para-box">
+          <ul>
+            <li>What is GST?</li>
+            <li>What are different types of GST -CGST, SGST, UTGST, IGST, Cess</li>
+            <li>Concept of Supply</li>
+            <li>What is Output and Input GST?</li>
+            <li>What is GST Payable and GST Credit</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 2: How to Prepare GST Computation in Excel Format</h4>
+        <div class="para-box">
+          <ul>
+            <li>Only Local Sales Purchase</li>
+            <li>Only Interstate Sales Purchase</li>
+            <li>Both local and Interstate Sales Purchase</li>
+            <li>Setoff and Adjustment of Credit amongst CGST, SGST, IGST Utilization of ITC in next Tax Period</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 3: GST Accounting and Billing</h4>
+        <div class="para-box">
+          <ul>
+            <li>Difference between Tax Invoice and Bill of Supply</li>
+            <li>Concept of Debit Note,Credit Note,Revised invoice,Receipt and Payment VOucher</li>
+            <li>Journal Entries for Purchase, Sales. Purchase Return,Sales Return and Advance</li>
+            <li>Concept of LUT in Case of Export Invoice</li>
+            <li>Invoices to be issued by Regular and Composition Dealer</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 4: GST Due Dates Rules</h4>
+        <div class="para-box">
+          <ul>
+            <li>Returns to be filed by Regular and Composition Dealer</li>
+            <li>Quarterly and Monthly Return Procedure</li>
+            <li>QRMP Scheme-Quarterly Return Monthly Return</li>
+            <li>Monthly Return Due Dates -GSTR1 AND GSTR3B</li>
+            <li>Quarterly Return Due Dates -GSTR1 AND GSTR3B Concept of OFF-Invoice Furnishing Facility</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 5: E-Filing Process of GSTR - 1 using GST Portal Simulation Software</h4>
+        <div class="para-box">
+          <ul>
+            <li>Concept of B2B,B2C Large,B2C Small in GSTR1</li>
+            <li>How to Prepare working for GSTR1 like HSN Summary, Document Summary, B2C Summary</li>
+            <li>How to put Data in GST Offline tool</li>
+            <li>How to Generate Json File and upload in Govt Demo Portal Simulation</li>
+            <li>How to Login and Efile GSTR1 Return in Govt Demo Portal Simulation</li>
+            <li>How to Import Bulk Excel Sales Data into GSTR1</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 6: E-Filing Process of GST Challan &amp; GSTR-3B using GST Portal Simulation Software</h4>
+        <div class="para-box">
+          <ul>
+            <li>How to Prepare Computation for GSTR3B from sales and purchase bills</li>
+            <li>How to Check Cash and Credit Ledgers on Govt Portal Simulation</li>
+            <li>How to E-pay GST Challan on Govt Demo Portal Simulation</li>
+            <li>How to File GSTR3B Return on Govt Demo Portal Simulation after matching GSTR2B,Cash and Credit ledgers</li>
+            <li>Concept of Autofilling of GSTR3B Return from GSTR1 and GSTR2B</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 7: Checking GSTR-2A &amp; GSTR-2B before filing GST Returns</h4>
+        <div class="para-box">
+          <p>Understanding linkage of GSTR1 of seller with GSTR2A-2B of Buyer</p>
+          <ul>
+            <li>Cutoff Dates for updation of GSTR2A and GSTR3B</li>
+            <li>Understanding difference between GSTR2A and GSTR2B</li>
+            <li>GSTR2A -2B Updation for Quarterly Buyers</li>
+            <li>Reconciling GSTR2A-2B with books of Accounts using Vlookup</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 8: E-Way Bill Preparation Rules using E-Way Bill Portal Simulation Software</h4>
+        <div class="para-box">
+          <ul>
+            <li>Checking Transactions where E-Way bill applicable</li>
+            <li>Local and Interstate sales Cut-off for Preparation of E-way bill</li>
+            <li>How to Prepare E-Way bill from a Sales Bill or Purchase bill</li>
+            <li>Concept of Part A and Part B of E-Way bill</li>
+            <li>How to take print of E-Way bill prepared</li>
+            <li>How to Cancel E-Way bill prepared</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 9: E-Filing of Annual Returns GSTR-9C &amp; 9C using GST Portal Simulation Software</h4>
+        <div class="para-box">
+          <ul>
+            <li>Concept of GSTR9 and GSR9C</li>
+            <li>For Whom GSTR9 and 9C Applicable</li>
+            <li>How to Prepare Summary of GSTR1 and GSTR3B for Annual Returns</li>
+            <li>How to Download and Prepare GSTR9 Offline tool</li>
+            <li>How to upload and Submit GSTR9 at Govt Demo Portal Simulation</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 10: GST ITC Rules for Availment of Input Tax Credit</h4>
+        <div class="para-box">
+          <ul>
+            <li>Concept of ITC and Closing ITC</li>
+            <li>Different types of ITC</li>
+            <li>Cases where ITC Not Available</li>
+            <li>Cases when ITC Need to be Reversed</li>
+            <li>Cut-off Date for Taking ITC</li>
+          </ul>
+        </div>
+      </div>
+      <div class="explain-box">
+        <h4>Unit 11: GST Registration using GST Portal Simulation Software</h4>
+        <div class="para-box">
+          <ul>
+            <li>Registration limit for GST for Local and Interstate Sales</li>
+            <li>For Whom Registration is Mandatory</li>
+            <li>Documents Required for Registration</li>
+            <li>How to Apply for Registration at Govt Portal</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center;"><br /><br />
+      <a href="/payments/paynow" class="btn pri">Course @ <del>&#8377;5000</del> &#8377;2500. Book Now </a>
+    </div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %} {% endblock scripts %}

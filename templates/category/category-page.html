@@ -1,0 +1,55 @@
+{% extends 'layouts/user-layout.html' %} {% load static %}
+{% block title %}{{category.title}} | Schoolistan{% endblock title %}
+{% block meta_tags %} {% if category.meta_description %}
+<meta property="og:description" name="description" content="{{category.meta_description}}">
+{% endif %} {% endblock meta_tags %}{% block content %}
+<main class="main">
+  <div class="container">
+    <div class="breadcrum">{% autoescape off %}{{breadcrum}}{% endautoescape %}</div>
+    <br />
+    <h1 style="text-align: center;">{{category.title}}</h1><br />
+    {% if category.description %}
+    <div id="cat-desc" class="cat-desc para-box">{% autoescape off %}{{category.description}}{% endautoescape %}</div>
+    <button class="btn pri sm" onclick="hideShowCatDesc(this)">View More</button>
+    <br /><br />
+    {% endif %}
+    {% if categories %}
+    <div class="cat-tabs">
+      {% for cat in categories %}
+      <a href="{{path_info}}/{{cat.slug}}">{{cat.title}}</a>
+      {% endfor %}
+    </div>
+    <br /><br />
+    {% endif %}
+    <br />
+    <div id="data-box"></div><br />
+    <div id="data-loading" class="tx-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+    <div class="tx-center"><button id="load-more-post-btn" class="btn pri">View More Posts</button></div>
+  </div>
+</main>
+{% endblock content %} {% block scripts %}
+<script>
+  const user_id = {{curr_user_id}};
+  const is_teacher = {% if curr_user_id and request.user.role <= 3 %}true{% else %}false{% endif %};
+  const mediaUrl = "{{MEDIA_URL}}";
+  const userPic = "{% static 'images/user.png' %}";
+  const posts_url = "/post/post-list?category_id={{category.id}}&asc_order=1";
+  {% if premium_cat and not subscribed %}
+  const bannerUrl = "/banner-list?category_id={{premium_cat.id}}";
+  {% endif %}
+  const hideShowCatDesc = (btn) => {
+    const desc = document.getElementById('cat-desc');
+    if(desc.getAttribute('data-expanded') == '1') {
+      desc.style.maxHeight = `120px`;
+      desc.removeAttribute('data-expanded');
+      btn.innerHTML="View More"
+    } else {
+      desc.style.maxHeight = "max-content";
+      desc.setAttribute('data-expanded', '1');
+      btn.innerHTML="View Less"
+    }
+  }
+</script>
+<script src="{% static 'scripts/swipe-handle.js' %}?v=0.03"></script>
+<script src="{% static 'scripts/posts-view.js' %}?v=0.25"></script>
+{% endblock scripts %}

@@ -1,0 +1,78 @@
+@media (min-width: 1281px) {
+  .attendance-chart {
+    grid-template-columns: auto auto auto auto;
+  }
+  .grid-5 {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
+}
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .attendance-chart {
+    grid-template-columns: auto auto auto;
+  }
+  .grid-5 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .attendance-chart {
+    grid-template-columns: auto auto;
+  }
+  .card,
+  main {
+    padding: 15px;
+  }
+  .grid-5 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .attendance-chart {
+    grid-template-columns: auto auto;
+  }
+  .card,
+  main {
+    padding: 15px;
+  }
+  .grid-5 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media (min-width: 481px) and (max-width: 767px) {
+  .grid-5 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media (min-width: 320px) and (max-width: 480px) {
+}
+
+/* ---------------------------------------------------------- */
+@media (max-width: 767px) {
+  .side-nav {
+    left: -250px;
+  }
+  .top-nav,
+  main {
+    margin-left: 0;
+  }
+  .filter {
+    justify-content: flex-start;
+  }
+  #close {
+    display: block;
+  }
+  .card,
+  main {
+    padding: 10px;
+  }
+  .form p {
+    width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .grid-5 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 1025px) {
+}

@@ -1,0 +1,260 @@
+{% extends 'layouts/admin-layout.html' %} {% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'styles/admin/ad-course.css' %}" />
+<style>
+  .form { margin-top: 20px; display: none; }
+  .form h2 { width: 100%; }
+</style>
+{% endblock styles %} {% block content %}
+<main>
+  <div class="card">
+    <h1 style="display: inline">Course</h1>
+    <div class="divider"></div>
+    <div class="stepper">
+      <div class="step {{steps_dot.1}} tooltip" data-text="Basic Infos" id="st-1">1</div>
+      <div class="line {{steps_line.1}}" id="ln-1"></div>
+      <div class="step {{steps_dot.2}} tooltip" data-text="Description" id="st-2">2</div>
+      <div class="line {{steps_line.2}}" id="ln-2"></div>
+      <div class="step {{steps_dot.3}} tooltip" data-text="Units/Chapters" id="st-3">3</div>
+      <div class="line {{steps_line.3}}" id="ln-3"></div>
+      <div class="step {{steps_dot.4}} tooltip" data-text="Publish" id="st-4">4</div>
+    </div>
+    <form class="form" id="box-1" onsubmit="event.preventDefault(); submitBasic();">
+      <h2>Step 1: Basic Informations</h2>
+      <div class="divider"></div>
+      <p>
+        <label for="name">Name:</label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          value="{{course.name}}"
+          required
+          maxlength="255"
+          placeholder="Course name"
+        />
+      </p>
+      <p>
+        <label for="teacher_name">Teacher name:</label>
+        <input
+          type="text"
+          name="teacher_name"
+          id="teacher_name"
+          value="{{course.teacher_name}}"
+          maxlength="255"
+          required
+          placeholder="Teacher name"
+        />
+      </p>
+      <p>
+        <label for="price">Price</label>
+        <input type="number" name="price" value="{{course.price}}" min="1" id="price" required placeholder="Enter price" step="1">
+      </p>
+      <p>
+        <label for="validity">Validity</label>
+        <input type="number" name="validity" value="{{course.validity}}" id="validity" min="1" required placeholder="Enter validity" step="1">
+      </p>
+      <p>
+        <label for="old_price">Old Price</label>
+        <input type="number" name="old_price" value="{{course.old_price}}" id="old_price" required placeholder="Enter old price" min="1"  step="1">
+      </p>
+      <p class="full">
+        <label for="about">About (Very short description)</label>
+        <textarea name="about" id="about" rows="3" maxlength="500" required>{{course.about}}</textarea>
+      </p>
+      <div class="btn-box">
+        <button type="Submit" class="btn primary" id="save-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+    <form class="form" id="box-2" onsubmit="event.preventDefault(); submitDescription();">
+      <h2>Step 2: Description</h2>
+      <div class="divider"></div>
+      <p class="full">
+        <label for="description">Short description:</label>
+        <textarea class="editor" id="description">{% autoescape off %}{% if course and course.description %}{{course.description}}{% endif %}{% endautoescape %}</textarea>
+      </p>
+      <p class="full">
+        <label for="what_included">What will this course include:</label>
+        <textarea class="editor" id="what_included">{% autoescape off %}{% if course and course.what_included %}{{course.what_included}}{% endif %}{% endautoescape %}</textarea>
+      </p>
+      <div class="btn-box">
+        <button type="Submit" class="btn primary" id="save-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+    <form class="form" id="box-3" onsubmit="event.preventDefault(); submitUnits();">
+      <div style="width: 100%;">
+        <h2 style="display: inline">
+          Step 3: Units/Chapters
+          <span style="float: right; cursor: pointer" onclick="AddUnit()"><i class="fa-solid fa-plus"></i></span>
+        </h2>
+      </div>
+      <div class="divider"></div>
+      <div id="units-cont" class="units-cont">
+        {% for unit in course.units %}
+        <div class="unit">
+          <h3>Unit/Chapter <span onclick="delUnit(this)"><i class="fa-solid fa-trash"></i></span></h3>
+          <p class="full"><input type="text" name="unit_name" placeholder="Enter unit name" maxlength="255" value="{{unit.name}}" required></p>
+          <div class="divider"></div>
+          <h3>Topics <span onclick="AddTopic(this)"><i class="fa-solid fa-plus"></i></span></h3>
+          <div class="topics-cont">
+            {% for topic in unit.topics %}
+            <p>
+              <input type="text" name="topic_name" placeholder="Enter topic" value="{{topic.name}}" required>
+              <span onclick="delTopic(this)"><i class="fa-solid fa-trash"></i></span>
+            </p>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="btn-box">
+        <button type="Submit" class="btn primary" id="save-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+    <form class="form" id="box-4" onsubmit="event.preventDefault(); submitReview();">
+      <h2>Step 4: Publish</h2>
+      <div class="divider"></div>
+      {% if course.status %}
+      <h3 style="width: 100%;">
+        Current Status: <span style="color: green"><i class="fa-solid fa-circle-dot"></i> Published</span>
+      </h3>
+      <p class="full"><a href="{{course_url}}">{{course_url}}</a></p>
+      {% else %}
+      <h3 style="width: 100%;">
+        Current Status: <span style="color: red"><i class="fa-solid fa-circle-dot"></i> On Hold</span>
+      </h3>
+      <p class="full"><a href="{{course_url}}">{{course_url}}</a></p>
+      <p class="full">Note: Url will be online after course published</p>
+      {% endif %}
+      <p>
+        <label for="status">Change status:</label>
+        <select name="status" id="status" required>
+          <option value="1" {% if course and course.status == True %}selected{% endif %}>Publish</option>
+          <option value="0" {% if course and course.status != True %}selected{% endif %}>On Hold</option>
+        </select>
+      </p>
+      <div class="btn-box">
+        <button type="Submit" class="btn primary" id="save-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock content %}{% block scripts %}
+<script src="https://cdn.tiny.cloud/1/sozgxfg28gkwdz0upcdcf0pguivsi2gg0amwnz7c6iu4wsek/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{% static 'scripts/plugins-usage/tinymce-usage.js' %}"></script>
+<script>
+  var currStep = null;
+  const changeStep = (event) => {
+    const newStep = parseInt(event.target.id.split('-')[1]);
+    if (currStep) {
+      document.getElementById(`box-${currStep}`).style.display = 'none';
+      document.getElementById(`st-${currStep}`).innerHTML = currStep;
+    }
+    document.getElementById(`box-${newStep}`).style.display = 'flex';
+    event.target.innerHTML = '<i class="fa-solid fa-pen"></i>';
+    currStep = newStep;
+  }
+  const activeSteps = document.querySelectorAll('.stepper .step.done, .stepper .step.active');
+  activeSteps.forEach(step => step.addEventListener('click', changeStep));
+  document.getElementById(`st-{{curr_step_no}}`).click();
+
+  const delTopic = (btn) => btn.parentNode.remove();
+  const delUnit = (btn) => btn.parentNode.parentNode.remove();
+  const AddTopic = (btn) => {
+    const htmlText = `
+      <p>
+        <input type="text" name="topic_name" placeholder="Enter topic" required>
+        <span onclick="delTopic(this)"><i class="fa-solid fa-trash"></i></span>
+      </p>
+    `;
+    btn.parentNode.parentNode.querySelector('.topics-cont').insertAdjacentHTML("beforeend", htmlText);
+  }
+  const unitsCont = document.getElementById('units-cont');
+  const AddUnit = () => {
+    const htmlText = `
+      <div class="unit">
+        <h3>Unit/Chapter <span onclick="delUnit(this)"><i class="fa-solid fa-trash"></i></span></h3>
+        <p class="full"><input type="text" name="unit_name" placeholder="Enter unit name" maxlength="255" required></p>
+        <div class="divider"></div>
+        <h3>Topics <span onclick="AddTopic(this)"><i class="fa-solid fa-plus"></i></span></h3>
+        <div class="topics-cont">
+          <p>
+            <input type="text" name="topic_name" placeholder="Enter topic" required>
+            <span onclick="delTopic(this)"><i class="fa-solid fa-trash"></i></span>
+          </p>
+        </div>
+      </div>
+    `;
+    unitsCont.insertAdjacentHTML("beforeend", htmlText);
+  }
+  const submitToServer = async (data) => {
+    startLoading();
+    const result = await postToServer(``, data);
+    stopLoading();
+    if (result.status) {
+      if (data.step_no < 4) {
+        const nextStepNo = data.step_no + 1;
+        const stepDot = document.getElementById(`st-${nextStepNo}`);
+        if(stepDot) {
+          if (!stepDot.classList.contains('done') && !stepDot.classList.contains('active')) {
+            stepDot.addEventListener('click', changeStep)
+          }
+          stepDot.click();
+        }
+      } else window.location.href = '/admin/dashboard';
+      return result.data;
+    }
+    else alertify.error(result.msg);
+  }
+  const submitBasic = async () => {
+    name = document.getElementById('name').value.trim();
+    if (name == '') {
+      alertify.error("Please enter course name.");
+      return false;
+    }
+    const data = {
+      step_no: 1, // basic informations
+      name: name,
+      teacher_name: document.getElementById('teacher_name').value.trim(),
+      price: document.getElementById('price').value,
+      validity: document.getElementById('validity').value,
+      old_price: document.getElementById('old_price').value,
+      about: document.getElementById('about').value.trim(),
+    };
+    const resData = await submitToServer(data);
+    if(resData && resData.created) window.location.href = `/admin/course/${resData.course_id}/edit`;
+  }
+  const submitDescription = async () => {
+    const data = {
+      step_no: 2, // description
+      description: tinymce.get("description").getContent(),
+      what_included: tinymce.get("what_included").getContent()
+    }
+    submitToServer(data);
+  }
+  const submitUnits = async () => {
+    const allUnits = unitsCont.querySelectorAll('.unit');
+    const unitList = [];
+    allUnits.forEach(unit => {
+      const topics = [];
+      const allTopics = unit.querySelectorAll('.topics-cont p input[name="topic_name"]');
+      allTopics.forEach(topic => topics.push({name: topic.value.trim()}));
+      unitList.push({
+        name: unit.querySelector('p input[name="unit_name"]').value.trim(),
+        topics: topics
+      });
+    });
+    submitToServer({step_no: 3, units: unitList});
+  }
+  const submitReview = async () => {
+    submitToServer({step_no: 4, status: document.getElementById('status').value});
+  }
+</script>
+{% endblock scripts %}

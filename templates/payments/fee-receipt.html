@@ -1,0 +1,103 @@
+{% load custom_date_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fee Receipt</title>
+    <style>
+      .name {
+        color: #0bb2ad;
+        font-size: 32px;
+        text-align: right;
+        font-family: "Work Sans", sans-serif;
+        line-height: 0%;
+      }
+      td {
+        vertical-align: baseline;
+      }
+      p, th, td {
+        font-size: 14px;
+        line-height: 0%;
+      }
+      thead tr {
+        background-color: #0bb2ad;
+        color: white;
+      }
+      .table th, .table td {
+        padding: 5px;
+        text-align: left;
+        border-left: 2px solid #ddd;
+        border-right: 2px solid #ddd;
+      }
+      .table .bor-all td {
+        border: 2px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <br />
+    <h1 class="name">Fee Receipt</h1>
+    <table>
+      <tr>
+        <td>
+          <p><b>Receipt No:</b> <span>{{payment.receipt_no}}</span></p>
+          <p><b>Receipt Date:</b> <span>{{payment.created_on|datetime_obj_to_ist_str}} (IST)</span></p>
+          <p><b>GSTIN No:</b> <span>07AALCM2911N1Z6</span></p>
+        </td>
+        <td style="text-align: right">
+          <h1>schoolistan</h1>
+          <p>MISHMASH EDUCATION SERVICES PVT LTD.</p>
+          <p>Shop F-13-IN B-1/8 Pusa Road</p>
+          <p>Old Rajendra Nagar Bazar Marg</p>
+          <p>New Delhi 110060</p>
+          <p>GSTIN No. 07AALCM2911N1Z6</p>
+        </td>
+      </tr>
+    </table>
+    <div>
+      <p><b>To</b></p>
+      <p><b>Name: </b><span>{{pay_user.first_name}} {{pay_user.last_name}}</span></p>
+      <p><b>username:</b> <span>{{pay_user.username}}</span></p>
+      <p><b>Email:</b> <span>{{pay_user.email}}</span></p>
+    </div>
+    <br />
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 10%;">Sr. No.</th>
+          <th>Item Description</th>
+          <th style="width: 25%;">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pay_item in payment_items %}
+        <tr>
+          <td>{{forloop.counter}}</td><td>{{pay_item.title}}</td>
+          <td>Rs {{pay_item.amount}}</td>
+        </tr>
+        {% endfor %}
+        <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <tr class="bor-all"><td>&nbsp;</td><td>Taxable Amount</td><td>Rs {{taxable_amount}}</td></tr>
+        <tr class="bor-all"><td>&nbsp;</td><td>CGST @9%</td><td>Rs {{cgst}}</td></tr>
+        <tr class="bor-all"><td>&nbsp;</td><td>SGST @9%</td><td>Rs {{sgst}}</td></tr>
+        <tr class="bor-all"><td>&nbsp;</td><td>Invoice Value</td><td>Rs {{payment.amount}}</td></tr>
+        <tr class="bor-all">
+          <td>&nbsp;</td><td>Payment status</td>
+          {% if payment.status == 1 %}
+          <td style="color: green;">Completed</td>
+          {% else %}
+          <td style="color: red;">Failed</td>
+          {% endif %}
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    {% if payment.status == 1 %}
+    <p style="text-align: center; color: green">Thank you for purchasing course(s).</p>
+    {% else %}
+    <p style="text-align: center; color: red">Payment Failed. Please try again.</p>
+    {% endif %}
+  </body>
+</html>

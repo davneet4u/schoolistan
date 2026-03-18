@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>Schoolistan | Admin Panel</title>
+    <!-- favicon icon -->
+    <link rel="icon" href="/static/images/logo.jpg" type="image/jpg" />
+    <!-- libraries -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'libraries/alertify.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'over-ride-libs/style.css' %}" />
+    <!-- custom styles -->
+    <link rel="stylesheet" href="{% static 'styles/admin-panel.css' %}?v=0.10" />
+    <link rel="stylesheet" href="{% static 'styles/admin-panel-responsive.css' %}?v=0.02" />
+    <style>
+      main {
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+        margin: 0;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="messages" style="display: none">
+      {% for message in messages %}
+      <span>{{ message.tags }}||||{{ message }}</span>
+      {% endfor %}
+    </div>
+    <main>
+      <div class="card" style="max-width: 480px">
+        <h1 style="text-align: center">Admin Login</h1>
+        <div class="divider"></div>
+        <form method="POST" class="form">
+          {% csrf_token %}
+          <p style="width: 100%;">
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" required />
+          </p>
+          <p style="width: 100%;">
+            <label for="password">Password: </label>
+            <input type="password" id="password" name="password" required />
+          </p>
+          <div class="btn-group" style="text-align: center; width: 100%">
+            <button type="reset" class="btn secondary">Reset</button>
+            &nbsp;&nbsp;
+            <button type="submit" class="btn primary">
+              <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <div id="loader-box"></div>
+    <script src="{% static 'libraries/alertify.min.js' %}"></script>
+    <script src="{% static 'scripts/common.js' %}?v=0.16"></script>
+    <script src="{% static 'scripts/admin-panel.js' %}?v=0.02"></script>
+  </body>
+</html>
