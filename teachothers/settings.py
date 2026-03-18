@@ -148,6 +148,9 @@ USE_TZ = True
 # Heroku/production expects absolute /static/ URLs.
 STATIC_URL = '/static/'
 
+# Serve static directly from the app (when enabled in urls.py).
+STATIC_CUSTOM_ROOT = BASE_DIR / "static"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 

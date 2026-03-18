@@ -16,8 +16,9 @@ Including another URLconf
 # from django.contrib import admin
 import os
 from django.urls import path, include
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
+from django.urls import re_path
+from django.views.static import serve
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
@@ -29,6 +30,12 @@ urlpatterns = [
     path('payments/', include('payments.urls')),
 ]
 
-if settings.DEBUG or os.environ.get("SERVE_STATIC") == "1":
-    urlpatterns += staticfiles_urlpatterns()
+if os.environ.get("SERVE_STATIC") == "1":
+    urlpatterns += [
+        re_path(
+            r"^static/(?P<path>.*)$",
+            serve,
+            {"document_root": str(settings.STATIC_CUSTOM_ROOT)},
+        )
+    ]
 
