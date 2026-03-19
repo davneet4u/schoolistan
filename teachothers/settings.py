@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from urllib.parse import urlparse
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -219,6 +221,17 @@ CASH_FREE_SECRET_KEY = os.environ.get('SK_CASH_FREE_SECRET_KEY')
 CASH_FREE_MODE = "sandbox"
 # CASH_FREE_MODE = "production"
 
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT', 'production')
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        integrations=[DjangoIntegration()],
+        send_default_pii=True,
+    )
+
 # VIMEO settings
 VIMEO_ACCESS_TOKEN = os.environ.get('SK_VIMEO_ACCESS_TOKEN')
 VIMEO_CLIENT_ID = os.environ.get('SK_VIMEO_CLIENT_ID')
@@ -231,4 +244,3 @@ EMAIL_HOST_USER = os.environ.get('SK_EMAIL_HOST_USER')
 
 # constants
 ORDER_PRE_STR = "schoolistan_or_"
-
