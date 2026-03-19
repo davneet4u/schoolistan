@@ -16,6 +16,27 @@ from urllib.parse import urlparse
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+
+def get_list_env(name, default):
+    value = os.environ.get(name)
+    if not value:
+        return default
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def get_bool_env(name, default):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def get_int_env(name, default):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return int(value)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,7 +50,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','schoolistan.com','www.schoolistan.com']
+ALLOWED_HOSTS = get_list_env(
+    'DJANGO_ALLOWED_HOSTS',
+    ['127.0.0.1', 'localhost', 'schoolistan.com', 'www.schoolistan.com']
+)
 
 
 # Application definition
@@ -142,6 +166,16 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+CSRF_TRUSTED_ORIGINS = get_list_env(
+    'DJANGO_CSRF_TRUSTED_ORIGINS',
+    ['https://schoolistan.com', 'https://www.schoolistan.com']
+)
+PREPEND_WWW = get_bool_env('DJANGO_PREPEND_WWW', False)
+SESSION_COOKIE_SECURE = get_bool_env('DJANGO_SESSION_COOKIE_SECURE', True)
+CSRF_COOKIE_SECURE = get_bool_env('DJANGO_CSRF_COOKIE_SECURE', True)
+SECURE_HSTS_SECONDS = get_int_env('DJANGO_SECURE_HSTS_SECONDS', 31536000)
+SECURE_SSL_REDIRECT = get_bool_env('DJANGO_SECURE_SSL_REDIRECT', True)
 
 
 # Static files (CSS, JavaScript, Images)
