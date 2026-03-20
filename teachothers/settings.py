@@ -175,6 +175,8 @@ PREPEND_WWW = get_bool_env('DJANGO_PREPEND_WWW', False)
 SESSION_COOKIE_SECURE = get_bool_env('DJANGO_SESSION_COOKIE_SECURE', True)
 CSRF_COOKIE_SECURE = get_bool_env('DJANGO_CSRF_COOKIE_SECURE', True)
 SECURE_HSTS_SECONDS = get_int_env('DJANGO_SECURE_HSTS_SECONDS', 31536000)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 SECURE_SSL_REDIRECT = get_bool_env('DJANGO_SECURE_SSL_REDIRECT', True)
 
 
@@ -263,6 +265,7 @@ if SENTRY_DSN:
         dsn=SENTRY_DSN,
         environment=SENTRY_ENVIRONMENT,
         integrations=[DjangoIntegration()],
+        auto_enabling_integrations=False,
         send_default_pii=True,
     )
 
