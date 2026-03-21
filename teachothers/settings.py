@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import logging
 import os
 from urllib.parse import urlparse
+from django.core.exceptions import ImproperlyConfigured
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 
 def get_list_env(name, default):
@@ -109,24 +112,13 @@ WSGI_APPLICATION = 'teachothers.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('SC_DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        # 'PORT': '3306',
-        # 'OPTIONS': {
-        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        # },
-    }
-}
-
 DATABASE_URL = os.environ.get("DATABASE_URL")
-if DATABASE_URL:
-    url = urlparse(DATABASE_URL)
-    DATABASES["default"] = {
+if not DATABASE_URL:
+    raise ImproperlyConfigured("DATABASE_URL must be set for production")
+
+url = urlparse(DATABASE_URL)
+DATABASES = {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": (url.path or "").lstrip("/"),
         "USER": url.username,
@@ -134,8 +126,8 @@ if DATABASE_URL:
         "HOST": url.hostname,
         "PORT": str(url.port) if url.port else "",
         "CONN_MAX_AGE": int(os.environ.get("DB_CONN_MAX_AGE", "600")),
-        "OPTIONS": {"sslmode": "require"},
     }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -261,10 +253,14 @@ SENTRY_DSN = os.environ.get('SENTRY_DSN')
 SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT', 'production')
 
 if SENTRY_DSN:
+    sentry_logging = LoggingIntegration(
+        level=logging.INFO,
+        event_level=logging.ERROR,
+    )
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         environment=SENTRY_ENVIRONMENT,
-        integrations=[DjangoIntegration()],
+        integrations=[DjangoIntegration(), sentry_logging],
         auto_enabling_integrations=False,
         send_default_pii=True,
     )

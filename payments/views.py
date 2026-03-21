@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta
 from acc.models import User
 from django.db import connection
+import sentry_sdk
 
 ORDER_PRE_STR = settings.ORDER_PRE_STR
 
@@ -352,5 +353,11 @@ def generate_and_send_receipt(payment):
         "curr_date_time": datetime.now(tz=ZoneInfo('Asia/Kolkata')).strftime('%a, %b %d, %Y, %H:%M'),
         "payment": payment
     })
-    send_file_buffer_email(pay_user.email, "Payment confirmation", html, file_obj, 'payment-slip.pdf')
-
+    sent_ok = send_file_buffer_email(
+        pay_user.email, "Payment confirmation", html, file_obj, 'payment-slip.pdf'
+    )
+    if not sent_ok:
+        sentry_sdk.capture_message(
+            f"Payment confirmation email failed for payment_id={payment.id}",
+            level="error",
+        )

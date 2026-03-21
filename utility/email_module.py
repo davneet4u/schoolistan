@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.mail import EmailMessage
+import sentry_sdk
 
 
 def send_text_email(to_email, subject, text_body, file_path = None):
@@ -9,7 +10,8 @@ def send_text_email(to_email, subject, text_body, file_path = None):
             email.attach_file(file_path)
         email.send()
         return True
-    except:
+    except Exception as exc:
+        sentry_sdk.capture_exception(exc)
         return False
 
 def send_html_email(to_email, subject, html_body, file_path = None):
@@ -20,7 +22,8 @@ def send_html_email(to_email, subject, html_body, file_path = None):
             email.attach_file(file_path)
         email.send()
         return True
-    except:
+    except Exception as exc:
+        sentry_sdk.capture_exception(exc)
         return False
 
 def send_file_buffer_email(to_email, subject, html_body, file_buffer, file_name):
@@ -33,5 +36,6 @@ def send_file_buffer_email(to_email, subject, html_body, file_buffer, file_name)
             return True
         else:
             return False
-    except:
+    except Exception as exc:
+        sentry_sdk.capture_exception(exc)
         return False

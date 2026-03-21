@@ -11,6 +11,7 @@ from post.models import Category, Course
 from django.conf import settings
 from .models import ContactUs
 from django.db import connection
+import sentry_sdk
 
 
 # Create your views here.
@@ -79,7 +80,8 @@ def auth_login(request):
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
             # userid = idinfo['sub']
-        except ValueError:
+        except ValueError as exc:
+            sentry_sdk.capture_exception(exc)
             # Invalid token
             return JsonResponse({"msg": "Invalid google token"}, status=400)
 
